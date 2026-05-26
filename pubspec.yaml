@@ -1,0 +1,60 @@
+name: famihub_flutter
+description: FamiHub - Ứng dụng quản lý gia đình
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # HTTP
+  dio: ^5.4.0
+
+  # Storage
+  flutter_secure_storage: ^9.0.0
+
+  # Image
+  image_picker: ^1.0.7
+
+  # State management
+  provider: ^6.1.2
+
+  # Fonts
+  google_fonts: ^6.2.1
+
+  # Date formatting
+  intl: ^0.19.0
+
+  # Cached network image
+  cached_network_image: ^3.3.1
+
+  # Icons
+  cupertino_icons: ^1.0.6
+  pinput: ^6.0.2
+  url_launcher: ^6.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  web:
+    generate: true
+    image_path: "assets/images/logo.png"
+  image_path: "assets/images/logo.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/logo.png"
