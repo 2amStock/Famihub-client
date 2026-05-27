@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  // Premium vibrant palette
-  static const Color primary = Color(0xFFD91A5A);      // Bright Pink
-  static const Color primaryLight = Color(0xFFFF4D85); 
-  static const Color primaryDark = Color(0xFFB01247);
+  // Premium vibrant palette (Based on template)
+  static const Color primary = Color(0xFFF94C84);      // Vibrant Pink
+  static const Color primaryLight = Color(0xFFFF7DA3); 
+  static const Color primaryDark = Color(0xFFD81B60);
   
-  static const Color secondary = Color(0xFF2C4A8C);    // Deep Blue
-  static const Color secondaryLight = Color(0xFF4A72D6);
+  static const Color secondary = Color(0xFF4285F4);    // Blue
+  static const Color secondaryLight = Color(0xFF8AB4F8);
   
-  static const Color accent = Color(0xFFD95F76);       // Pink
+  static const Color accent = Color(0xFFFF5252);       // Bright Pink
   
   // Background & Surfaces
-  static const Color background = Colors.white;   
+  static const Color background = Color(0xFFF8F9FE);   // Very light blue-ish white
   static const Color surface = Colors.white;
   static const Color cardBg = Colors.white;
   
@@ -22,44 +22,44 @@ class AppColors {
   static const Color glassBorder = Color(0x33FFFFFF);
   
   // Text
-  static const Color textPrimary = Color(0xFF1D1D1F);    // Near black
-  static const Color textSecondary = Color(0xFF6E6E73);  // Grey
-  static const Color textHint = Color(0xFFAEAEB2);
+  static const Color textPrimary = Color(0xFF2D3748);    // Dark slate
+  static const Color textSecondary = Color(0xFF718096);  // Grey
+  static const Color textHint = Color(0xFFA0AEC0);
   
   // Status
-  static const Color pending = Color(0xFFFFD60A);
-  static const Color inProgress = Color(0xFF007AFF);
-  static const Color submitted = Color(0xFFBF5AF2);
-  static const Color approved = Color(0xFF34C759);
-  static const Color rejected = Color(0xFFFF3B30);
+  static const Color pending = Color(0xFFF6AD55);      // Orange
+  static const Color inProgress = Color(0xFF4299E1);   // Blue
+  static const Color submitted = Color(0xFF9F7AEA);    // Purple
+  static const Color approved = Color(0xFF48BB78);     // Green
+  static const Color rejected = Color(0xFFF56565);     // Red
 
   // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF2C4A8C), Color(0xFFD91A5A)], // Blue to Pink for buttons
+    colors: [Color(0xFF4285F4), Color(0xFFF94C84)], // Blue to Pink
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
   );
 
   static const LinearGradient backgroundGradient = LinearGradient(
-    colors: [Color(0xFFF2F5FE), Color(0xFFFEE6EE)],
+    colors: [Color(0xFFE3F2FD), Color(0xFFFCE4EC)], // Light blue to Light pink
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient premiumGradient = LinearGradient(
-    colors: [Color(0xFF2C4A8C), Color(0xFFD91A5A)],
+    colors: [Color(0xFF4285F4), Color(0xFFF94C84)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient parentGradient = LinearGradient(
-    colors: [Color(0xFF2C4A8C), Color(0xFFD91A5A)],
+    colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient childGradient = LinearGradient(
-    colors: [Color(0xFF4A72D6), Color(0xFFFF4D85)],
+    colors: [Color(0xFFF94C84), Color(0xFFFF7DA3)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

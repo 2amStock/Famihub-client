@@ -6,6 +6,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/providers/providers.dart';
 import '../../shared/widgets/widgets.dart';
 import '../subscription/subscription_screen.dart';
+import '../../core/utils/ui_helpers.dart';
 
 class CreateTaskScreen extends StatefulWidget {
   const CreateTaskScreen({super.key});
@@ -85,18 +86,10 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       if (!mounted) return;
       setState(() => _saving = false);
       if (task != null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('✅ Đã tạo nhiệm vụ thành công!'),
-          backgroundColor: AppColors.approved,
-          behavior: SnackBarBehavior.floating,
-        ));
+        UIHelpers.showMessageBox(context, 'Thành công', '✅ Đã tạo nhiệm vụ thành công!');
         Navigator.pop(context, true);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Không thể tạo nhiệm vụ. Vui lòng thử lại.'),
-          backgroundColor: AppColors.rejected,
-          behavior: SnackBarBehavior.floating,
-        ));
+        UIHelpers.showMessageBox(context, 'Lỗi', 'Không thể tạo nhiệm vụ. Vui lòng thử lại.', isError: true);
       }
     } catch (e) {
       if (!mounted) return;
@@ -107,11 +100,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
           MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Lỗi: $e'),
-          backgroundColor: AppColors.rejected,
-          behavior: SnackBarBehavior.floating,
-        ));
+        UIHelpers.showMessageBox(context, 'Lỗi', 'Lỗi: $e', isError: true);
       }
     }
   }
@@ -235,11 +224,11 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
 
                       // Assign to child
                       DropdownButtonFormField<int?>(
-                        value: _selectedChild,
+                        initialValue: _selectedChild,
                         style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.textPrimary),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Giao cho ai?',
-                          prefixIcon: const Icon(Icons.child_care_rounded,
+                          prefixIcon: Icon(Icons.child_care_rounded,
                               color: AppColors.secondary),
                         ),
                         items: [

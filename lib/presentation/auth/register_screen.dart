@@ -5,6 +5,7 @@ import '../../data/providers/providers.dart';
 import '../../shared/widgets/widgets.dart';
 import '../child/child_home_screen.dart';
 import 'otp_verification_screen.dart';
+import '../../core/utils/ui_helpers.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -18,22 +19,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _name = TextEditingController();
   final _email = TextEditingController();
   final _pass = TextEditingController();
+  final _confirmPass = TextEditingController();
   String _role = 'Parent';
   bool _showPass = false;
+  bool _showConfirmPass = false;
 
   @override
   void dispose() {
     _name.dispose();
     _email.dispose();
     _pass.dispose();
+    _confirmPass.dispose();
     super.dispose();
   }
 
   Future<void> _register() async {
     if (!_form.currentState!.validate()) return;
+    
+    String finalEmail = _email.text.trim();
+    // Nếu là con cái và không nhập định dạng email, tự động thêm đuôi giả để thỏa mãn Backend
+    if (_role == 'Child' && !finalEmail.contains('@')) {
+      finalEmail = '$finalEmail@famihub.local';
+    }
+
     final auth = context.read<AuthProvider>();
     final ok = await auth.register(
-        _name.text.trim(), _email.text.trim(), _pass.text, _role);
+        _name.text.trim(), finalEmail, _pass.text, _role);
     if (!mounted) return;
     if (ok) {
       if (_role == 'Parent') {
@@ -48,12 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(auth.error ?? 'Đăng ký thất bại'),
-        backgroundColor: AppColors.rejected,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ));
+      UIHelpers.showMessageBox(context, 'Lỗi', auth.error ?? 'Đăng ký thất bại', isError: true);
     }
   }
 
@@ -148,11 +154,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 16),
                         FamiTextField(
                           controller: _email,
-                          label: 'Email',
-                          keyboardType: TextInputType.emailAddress,
-                          prefixIcon: Icons.email_rounded,
+                          label: _role == 'Parent' ? 'Email' : 'Tên đăng nhập',
+                          keyboardType: _role == 'Parent' ? TextInputType.emailAddress : TextInputType.text,
+                          prefixIcon: _role == 'Parent' ? Icons.email_rounded : Icons.person_outline_rounded,
                           validator: (v) => (v?.isEmpty ?? true)
-                              ? 'Vui lòng nhập email' : null,
+                              ? (_role == 'Parent' ? 'Vui lòng nhập email' : 'Vui lòng nhập tên đăng nhập') : null,
                         ),
                         const SizedBox(height: 16),
                         FamiTextField(
@@ -169,6 +175,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           validator: (v) => (v?.length ?? 0) < 6
                               ? 'Mật khẩu tối thiểu 6 ký tự' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        FamiTextField(
+                          controller: _confirmPass,
+                          label: 'Xác nhận mật khẩu',
+                          obscure: !_showConfirmPass,
+                          prefixIcon: Icons.lock_clock_rounded,
+                          suffix: GestureDetector(
+                            onTap: () => setState(() => _showConfirmPass = !_showConfirmPass),
+                            child: Icon(
+                              _showConfirmPass ? Icons.visibility_off : Icons.visibility,
+                              color: AppColors.textHint,
+                            ),
+                          ),
+                          validator: (v) {
+                            if ((v?.isEmpty ?? true)) return 'Vui lòng xác nhận mật khẩu';
+                            if (v != _pass.text) return 'Mật khẩu không khớp';
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 28),
                         Consumer<AuthProvider>(

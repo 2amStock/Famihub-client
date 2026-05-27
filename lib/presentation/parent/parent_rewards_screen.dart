@@ -4,6 +4,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/models/models.dart';
 import '../../data/providers/providers.dart';
 import '../subscription/subscription_screen.dart';
+import '../../core/utils/ui_helpers.dart';
 
 class ParentRewardsScreen extends StatefulWidget {
   const ParentRewardsScreen({super.key});
@@ -71,7 +72,7 @@ class _ParentRewardsScreenState extends State<ParentRewardsScreen> with SingleTi
               final title = titleController.text.trim();
               final points = int.tryParse(pointsController.text.trim()) ?? 0;
               if (title.isEmpty || points <= 0) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng nhập tên và điểm hợp lệ')));
+                UIHelpers.showMessageBox(context, 'Lỗi', 'Vui lòng nhập tên và điểm hợp lệ', isError: true);
                 return;
               }
 
@@ -148,7 +149,7 @@ class _ParentRewardsScreenState extends State<ParentRewardsScreen> with SingleTi
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Xử lý yêu cầu', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: const Text('Xử lý yêu cầu', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

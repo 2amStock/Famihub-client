@@ -6,9 +6,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/providers.dart';
 import '../../shared/widgets/widgets.dart';
-import '../auth/login_screen.dart';
 import 'task_list_screen.dart';
 import 'create_task_screen.dart';
+import 'parent_rewards_screen.dart';
+import '../../core/utils/ui_helpers.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -32,7 +33,6 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     final auth = context.watch<AuthProvider>();
     final family = context.watch<FamilyProvider>();
     final tasks = context.watch<TaskProvider>();
-    final user = auth.user!;
 
     return Scaffold(
       body: Container(
@@ -49,76 +49,57 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
             },
             child: CustomScrollView(
               slivers: [
-                // Header
+                // Custom AppBar
                 SliverToBoxAdapter(
-                  child: Container(
-                    margin: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                    padding: const EdgeInsets.all(28),
-                    decoration: BoxDecoration(
-                      gradient: AppColors.parentGradient,
-                      borderRadius: BorderRadius.circular(32),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        // const Icon(Icons.menu_rounded,
+                        //     size: 28, color: AppColors.textPrimary),
                         Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(
-                                color: Colors.white24,
-                                shape: BoxShape.circle,
-                                border:
-                                    Border.all(color: Colors.white, width: 2),
-                              ),
-                              child: const CircleAvatar(
-                                radius: 28,
-                                backgroundColor: Colors.white,
-                                child: Icon(Icons.person_rounded,
-                                    size: 28, color: AppColors.primary),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Chào ngày mới,',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.8),
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500)),
-                                  Text(user.name,
-                                      style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.w900,
-                                          letterSpacing: 0.5)),
-                                  const SizedBox(height: 2),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: const Text('Phụ huynh',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 9,
-                                            fontWeight: FontWeight.w900,
-                                            letterSpacing: 0.8)),
+                            Text(
+                              'FAMI',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    color: AppColors.secondary,
+                                    fontWeight: FontWeight.w900,
                                   ),
-                                ],
+                            ),
+                            Text(
+                              ' HUB',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        Stack(
+                          children: [
+                            const Icon(Icons.notifications_none_rounded,
+                                size: 28, color: AppColors.textPrimary),
+                            Positioned(
+                              right: 2,
+                              top: 2,
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                  border:
+                                      Border.all(color: Colors.white, width: 2),
+                                ),
                               ),
                             ),
-                            const SizedBox(width: 16),
                           ],
                         ),
                       ],
@@ -126,75 +107,217 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                   ),
                 ),
 
-                // Family info or setup
-                SliverToBoxAdapter(
+                // Greeting & House Image
+                const SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: family.loading
-                        ? const Center(child: CircularProgressIndicator())
-                        : family.family == null
-                            ? _FamilySetupCard()
-                            : _FamilyInfoCard(family: family),
-                  ),
-                ),
-
-                const SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-                // Stats
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Stack(
+                      clipBehavior: Clip.none,
                       children: [
-                        Expanded(
-                          child: _StatCard(
-                            icon: Icons.pending_actions_rounded,
-                            label: 'Chờ làm',
-                            count: tasks.pendingTasks.length,
-                            color: AppColors.pending,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 16),
+                            Text(
+                              'Xin chào, 👋',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Chào mừng bạn đến với\nFami Hub!',
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w900,
+                                height: 1.2,
+                              ),
+                            ),
+                            // Space for house image
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _StatCard(
-                            icon: Icons.rate_review_rounded,
-                            label: 'Chờ duyệt',
-                            count: tasks.submittedTasks.length,
-                            color: AppColors.submitted,
-                          ),
-                        ),
+                        // Positioned(
+                        //   right: -20,
+                        //   bottom: 0,
+                        //   child: Image.asset(
+                        //     'assets/images/logo.png', // Temporary placeholder for 3D house
+                        //     height: 160,
+                        //     fit: BoxFit.contain,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
                 ),
 
-                const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                // Search Bar
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Bạn cần tìm gì?',
+                          hintStyle: const TextStyle(
+                              color: AppColors.textHint, fontSize: 15),
+                          prefixIcon: const Icon(Icons.search_rounded,
+                              color: AppColors.textHint),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          fillColor: Colors.transparent,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 16),
+                          suffixIcon: Container(
+                            margin: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.search_rounded,
+                                color: Colors.white, size: 20),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
 
-                // Recent tasks
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+                // Categories
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Nhiệm vụ gần đây',
-                            style: Theme.of(context).textTheme.titleLarge),
-                        TextButton(
-                          onPressed: () => Navigator.push(
+                        _CategoryItem(
+                          icon: Icons.add_task_rounded,
+                          label: 'Giao việc',
+                          color: AppColors.secondary,
+                          onTap: () async {
+                            final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => const TaskListScreen())),
-                          child: const Text('Xem tất cả →'),
+                                  builder: (_) => const CreateTaskScreen()),
+                            );
+                            if (result == true) tasks.loadTasks();
+                          },
+                        ),
+                        _CategoryItem(
+                          icon: Icons.rate_review_rounded,
+                          label: 'Duyệt việc',
+                          color: AppColors.pending,
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const TaskListScreen()));
+                          },
+                        ),
+                        _CategoryItem(
+                          icon: Icons.card_giftcard_rounded,
+                          label: 'Đổi thưởng',
+                          color: AppColors.primary,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const ParentRewardsScreen()),
+                            );
+                          },
+                        ),
+                        _CategoryItem(
+                          icon: Icons.family_restroom_rounded,
+                          label: 'Gia đình',
+                          color: AppColors.inProgress,
+                          onTap: () {
+                            final familyProvider =
+                                context.read<FamilyProvider>();
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => Dialog(
+                                backgroundColor: Colors.transparent,
+                                insetPadding: const EdgeInsets.all(20),
+                                child: familyProvider.family == null
+                                    ? _FamilySetupCard()
+                                    : _FamilyInfoCard(family: familyProvider),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
                   ),
                 ),
 
+                const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+                // Featured/Recent Tasks Header
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Nhiệm vụ nổi bật',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const TaskListScreen()),
+                          ),
+                          child: const Text(
+                            'Xem tất cả',
+                            style: TextStyle(
+                              color: AppColors.secondary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Family setup info warning if no family
+                if (!family.loading && family.family == null)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      child: _FamilySetupCard(),
+                    ),
+                  ),
+
+                // Tasks List
                 if (tasks.loading)
                   const SliverToBoxAdapter(
                       child: Center(child: CircularProgressIndicator()))
-                else if (tasks.tasks.isEmpty)
+                else if (tasks.tasks.isEmpty && family.family != null)
                   const SliverToBoxAdapter(
                       child: Padding(
                     padding: EdgeInsets.all(40),
@@ -216,7 +339,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                         return Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 6),
-                          child: _TaskPreviewCard(task: t),
+                          child: _FeaturedTaskCard(task: t),
                         );
                       },
                       childCount: tasks.tasks.take(5).length,
@@ -270,38 +393,53 @@ class _FamilySetupCardState extends State<_FamilySetupCard> {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.secondary),
       ),
-      child: Column(
+      child: Stack(
         children: [
-          const Icon(Icons.home_rounded, size: 40, color: AppColors.primary),
-          const SizedBox(height: 8),
-          const Text('Tạo gia đình của bạn',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
-          const SizedBox(height: 4),
-          const Text('Tạo gia đình để bắt đầu giao việc cho các con',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _nameCtrl,
-            decoration: const InputDecoration(
-              labelText: 'Tên gia đình',
-              prefixIcon: Icon(Icons.family_restroom_rounded),
-            ),
+          Column(
+            children: [
+              const Icon(Icons.home_rounded,
+                  size: 40, color: AppColors.primary),
+              const SizedBox(height: 8),
+              const Text('Tạo gia đình của bạn',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+              const SizedBox(height: 4),
+              const Text('Tạo gia đình để bắt đầu giao việc cho các con',
+                  textAlign: TextAlign.center,
+                  style:
+                      TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _nameCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Tên gia đình',
+                  prefixIcon: Icon(Icons.family_restroom_rounded),
+                ),
+              ),
+              const SizedBox(height: 12),
+              FamiButton(
+                text: 'Tạo gia đình',
+                icon: Icons.add_home_rounded,
+                onPressed: () async {
+                  if (_nameCtrl.text.trim().isEmpty) return;
+                  final ok = await context
+                      .read<FamilyProvider>()
+                      .createFamily(_nameCtrl.text.trim());
+                  if (ok && context.mounted) {
+                    UIHelpers.showMessageBox(
+                        context, 'Thành công', 'Tạo gia đình thành công! 🎉');
+                  }
+                },
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          FamiButton(
-            text: 'Tạo gia đình',
-            icon: Icons.add_home_rounded,
-            onPressed: () async {
-              if (_nameCtrl.text.trim().isEmpty) return;
-              final ok = await context
-                  .read<FamilyProvider>()
-                  .createFamily(_nameCtrl.text.trim());
-              if (ok && context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Tạo gia đình thành công! 🎉')));
-              }
-            },
+          Positioned(
+            top: -8,
+            right: -8,
+            child: IconButton(
+              icon: const Icon(Icons.close_rounded,
+                  color: AppColors.textSecondary),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
           ),
         ],
       ),
@@ -359,6 +497,11 @@ class _FamilyInfoCard extends StatelessWidget {
                   ],
                 ),
               ),
+              IconButton(
+                icon: const Icon(Icons.close_rounded,
+                    color: AppColors.textSecondary),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -387,13 +530,8 @@ class _FamilyInfoCard extends StatelessWidget {
                 IconButton(
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: f.inviteCode));
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Đã sao chép mã mời: ${f.inviteCode}'),
-                      behavior: SnackBarBehavior.floating,
-                      backgroundColor: AppColors.textPrimary,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                    ));
+                    UIHelpers.showMessageBox(context, 'Thành công',
+                        'Đã sao chép mã mời: ${f.inviteCode}');
                   },
                   icon: const Icon(Icons.copy_rounded,
                       size: 20, color: AppColors.textPrimary),
@@ -406,72 +544,89 @@ class _FamilyInfoCard extends StatelessWidget {
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final int count;
-  final Color color;
-
-  const _StatCard(
-      {required this.icon,
-      required this.label,
-      required this.count,
-      required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          const SizedBox(height: 16),
-          Text('$count',
+          const SizedBox(height: 24),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Thành viên',
               style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.textPrimary,
-                  height: 1)),
-          const SizedBox(height: 4),
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w600)),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 350),
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              itemCount: f.members.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final member = f.members[index];
+                final isParent = member.role == 'Parent';
+                return Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isParent
+                        ? AppColors.primary.withValues(alpha: 0.1)
+                        : Colors.white,
+                    border:
+                        Border.all(color: Colors.black.withValues(alpha: 0.05)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor:
+                            isParent ? AppColors.primary : AppColors.secondary,
+                        child: Text(
+                          member.name.isNotEmpty
+                              ? member.name[0].toUpperCase()
+                              : '?',
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              member.name,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary),
+                            ),
+                            Text(
+                              isParent
+                                  ? 'Phụ huynh'
+                                  : 'Con cái - ${member.points} điểm',
+                              style: TextStyle(
+                                  fontSize: 12, color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class _TaskPreviewCard extends StatelessWidget {
+class _FeaturedTaskCard extends StatelessWidget {
   final dynamic task;
-  const _TaskPreviewCard({required this.task});
+  const _FeaturedTaskCard({required this.task});
 
   @override
   Widget build(BuildContext context) {
@@ -802,10 +957,8 @@ class _TaskPreviewCard extends StatelessWidget {
                                       rejectionNote: noteController.text);
                               if (ctx.mounted) Navigator.pop(ctx);
                               if (ok && context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content:
-                                            Text('Đã yêu cầu bé làm lại ❌')));
+                                UIHelpers.showMessageBox(context, 'Thông báo',
+                                    'Đã yêu cầu bé làm lại ❌');
                               }
                             },
                           ),
@@ -823,10 +976,8 @@ class _TaskPreviewCard extends StatelessWidget {
                                   .approveTask(task.id, true);
                               if (ctx.mounted) Navigator.pop(ctx);
                               if (ok && context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            'Tuyệt vời! Đã duyệt và tặng điểm ✅')));
+                                UIHelpers.showMessageBox(context, 'Tuyệt vời',
+                                    'Đã duyệt và tặng điểm ✅');
                               }
                             },
                           ),
@@ -839,6 +990,55 @@ class _TaskPreviewCard extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _CategoryItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _CategoryItem({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.2),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: color, size: 28),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }

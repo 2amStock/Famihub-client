@@ -59,20 +59,24 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
             elevation: 0,
             items: const [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home_rounded),
+                icon: Icon(Icons.home_outlined),
+                activeIcon: Icon(Icons.home_rounded),
                 label: 'Trang chủ',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.task_alt_rounded),
-                label: 'Việc của tôi',
+                icon: Icon(Icons.assignment_outlined),
+                activeIcon: Icon(Icons.assignment_rounded),
+                label: 'Nhiệm vụ',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.storefront_rounded),
-                label: 'Cửa hàng',
+                icon: Icon(Icons.card_giftcard_outlined),
+                activeIcon: Icon(Icons.card_giftcard_rounded),
+                label: 'Thưởng',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.settings_rounded),
-                label: 'Cài đặt',
+                icon: Icon(Icons.person_outline_rounded),
+                activeIcon: Icon(Icons.person_rounded),
+                label: 'Tài khoản',
               ),
             ],
           ),
