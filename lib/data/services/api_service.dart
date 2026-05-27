@@ -245,4 +245,30 @@ class ApiService {
     });
     return RewardRedemption.fromJson(res.data);
   }
+
+  // ── Family Events ────────────────────────────────────────────────────────
+
+  Future<List<FamilyEvent>> getFamilyEvents() async {
+    final res = await _dio.get('/family-events');
+    return (res.data as List).map((e) => FamilyEvent.fromJson(e)).toList();
+  }
+
+  Future<FamilyEvent> createFamilyEvent({
+    required String title,
+    String? description,
+    required DateTime startTime,
+    required DateTime endTime,
+  }) async {
+    final res = await _dio.post('/family-events', data: {
+      'title': title,
+      'description': description ?? '',
+      'startTime': startTime.toUtc().toIso8601String(),
+      'endTime': endTime.toUtc().toIso8601String(),
+    });
+    return FamilyEvent.fromJson(res.data);
+  }
+
+  Future<void> deleteFamilyEvent(int id) async {
+    await _dio.delete('/family-events/$id');
+  }
 }

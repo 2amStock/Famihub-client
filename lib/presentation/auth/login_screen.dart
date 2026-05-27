@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/providers.dart';
 import '../../shared/widgets/widgets.dart';
-import '../parent/parent_home_screen.dart';
-import '../child/child_home_screen.dart';
+import '../parent/parent_main_screen.dart';
+import '../child/child_main_screen.dart';
 import 'register_screen.dart';
 import 'otp_verification_screen.dart';
 import '../../core/utils/ui_helpers.dart';
@@ -46,8 +46,8 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (_) => auth.user!.isParent
-              ? const ParentHomeScreen()
-              : const ChildHomeScreen(),
+              ? const ParentMainScreen()
+              : const ChildMainScreen(),
         ),
       );
     } else {
@@ -75,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Navigator.pop(ctx);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => OtpVerificationScreen(email: email)),
+                MaterialPageRoute(builder: (_) => OtpVerificationScreen(email: email, password: _pass.text)),
               );
             },
             child: const Text('Đi tới Xác thực'),

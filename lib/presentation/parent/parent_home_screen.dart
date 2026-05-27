@@ -10,9 +10,11 @@ import 'task_list_screen.dart';
 import 'create_task_screen.dart';
 import 'parent_rewards_screen.dart';
 import '../../core/utils/ui_helpers.dart';
+import '../shared/family_calendar_screen.dart';
 
 class ParentHomeScreen extends StatefulWidget {
-  const ParentHomeScreen({super.key});
+  final Function(int)? onNavigate;
+  const ParentHomeScreen({super.key, this.onNavigate});
 
   @override
   State<ParentHomeScreen> createState() => _ParentHomeScreenState();
@@ -82,23 +84,38 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                             ),
                           ],
                         ),
-                        Stack(
+                        Row(
                           children: [
-                            const Icon(Icons.notifications_none_rounded,
-                                size: 28, color: AppColors.textPrimary),
-                            Positioned(
-                              right: 2,
-                              top: 2,
-                              child: Container(
-                                width: 10,
-                                height: 10,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary,
-                                  shape: BoxShape.circle,
-                                  border:
-                                      Border.all(color: Colors.white, width: 2),
+                            IconButton(
+                              icon: const Icon(Icons.calendar_today_rounded,
+                                  size: 26, color: AppColors.textPrimary),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const FamilyCalendarScreen(isParent: true)),
+                                );
+                              },
+                            ),
+                            Stack(
+                              children: [
+                                const Icon(Icons.notifications_none_rounded,
+                                    size: 28, color: AppColors.textPrimary),
+                                Positioned(
+                                  right: 2,
+                                  top: 2,
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary,
+                                      shape: BoxShape.circle,
+                                      border:
+                                          Border.all(color: Colors.white, width: 2),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
@@ -225,10 +242,14 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                           label: 'Duyệt việc',
                           color: AppColors.pending,
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const TaskListScreen()));
+                            if (widget.onNavigate != null) {
+                              widget.onNavigate!(1);
+                            } else {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const TaskListScreen()));
+                            }
                           },
                         ),
                         _CategoryItem(
@@ -285,11 +306,17 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const TaskListScreen()),
-                          ),
+                          onPressed: () {
+                            if (widget.onNavigate != null) {
+                              widget.onNavigate!(1);
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const TaskListScreen()),
+                              );
+                            }
+                          },
                           child: const Text(
                             'Xem tất cả',
                             style: TextStyle(

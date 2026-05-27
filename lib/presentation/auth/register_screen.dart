@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/providers.dart';
 import '../../shared/widgets/widgets.dart';
-import '../child/child_home_screen.dart';
+import '../child/child_main_screen.dart';
 import 'otp_verification_screen.dart';
 import '../../core/utils/ui_helpers.dart';
 
@@ -50,11 +50,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (_role == 'Parent') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => OtpVerificationScreen(email: _email.text.trim())),
+          MaterialPageRoute(builder: (_) => OtpVerificationScreen(email: _email.text.trim(), password: _pass.text)),
         );
       } else {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const ChildHomeScreen()),
+          MaterialPageRoute(builder: (_) => const ChildMainScreen()),
           (_) => false,
         );
       }
