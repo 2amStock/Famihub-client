@@ -168,3 +168,73 @@ class FamilyTask {
         rejectionNote: json['rejectionNote'],
       );
 }
+
+class Reward {
+  final int id;
+  final String title;
+  final String? description;
+  final int requiredPoints;
+  final DateTime createdAt;
+  final AppUser? createdBy;
+
+  Reward({
+    required this.id,
+    required this.title,
+    this.description,
+    required this.requiredPoints,
+    required this.createdAt,
+    this.createdBy,
+  });
+
+  factory Reward.fromJson(Map<String, dynamic> json) => Reward(
+        id: json['id'],
+        title: json['title'],
+        description: json['description'],
+        requiredPoints: json['requiredPoints'],
+        createdAt: DateTime.parse(json['createdAt']),
+        createdBy: json['createdBy'] != null ? AppUser.fromJson(json['createdBy']) : null,
+      );
+}
+
+class RewardRedemption {
+  final int id;
+  final int rewardId;
+  final String rewardTitle;
+  final String? rewardDescription;
+  final int requiredPoints;
+  final String status;
+  final String? parentNote;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  final AppUser? child;
+
+  RewardRedemption({
+    required this.id,
+    required this.rewardId,
+    required this.rewardTitle,
+    this.rewardDescription,
+    required this.requiredPoints,
+    required this.status,
+    this.parentNote,
+    required this.createdAt,
+    this.updatedAt,
+    this.child,
+  });
+
+  bool get isPending => status == 'Pending';
+  bool get isApproved => status == 'Approved';
+  bool get isRejected => status == 'Rejected';
+
+  factory RewardRedemption.fromJson(Map<String, dynamic> json) => RewardRedemption(
+        id: json['id'],
+        rewardId: json['rewardId'],
+        rewardTitle: json['rewardTitle'] ?? '',
+        rewardDescription: json['rewardDescription'],
+        requiredPoints: json['requiredPoints'] ?? 0,
+        status: json['status'],
+        parentNote: json['parentNote'],
+        createdAt: DateTime.parse(json['createdAt']),
+        updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+        child: json['child'] != null ? AppUser.fromJson(json['child']) : null,
+      );
+}
