@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:famihub_flutter/core/utils/ui_helpers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/services/api_service.dart';
 import '../../data/providers/providers.dart';
@@ -25,12 +26,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       if (url != null) {
         if (!await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication)) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Không thể mở trang thanh toán')));
+            UIHelpers.showMessageBox(context, 'Lỗi', 'Không thể mở trang thanh toán', isError: true);
           }
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lỗi tạo link thanh toán')));
+          UIHelpers.showMessageBox(context, 'Lỗi', 'Lỗi tạo link thanh toán', isError: true);
         }
       }
     } catch (e) {
@@ -38,7 +39,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       if (mounted) {
         // Loại bỏ chữ "Exception: " nếu có
         final msg = e.toString().replaceAll('Exception: ', '');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+        UIHelpers.showMessageBox(context, 'Lỗi', msg, isError: true);
       }
     }
   }

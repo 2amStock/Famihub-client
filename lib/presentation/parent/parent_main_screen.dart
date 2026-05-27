@@ -4,8 +4,6 @@ import 'parent_home_screen.dart';
 import 'task_list_screen.dart';
 import '../subscription/subscription_screen.dart';
 import 'parent_settings_screen.dart';
-import 'parent_rewards_screen.dart';
-
 class ParentMainScreen extends StatefulWidget {
   const ParentMainScreen({super.key});
 
@@ -19,7 +17,6 @@ class _ParentMainScreenState extends State<ParentMainScreen> {
   final List<Widget> _screens = const [
     ParentHomeScreen(),
     TaskListScreen(),
-    ParentRewardsScreen(),
     SubscriptionScreen(),
     ParentSettingsScreen(),
   ];
@@ -61,24 +58,24 @@ class _ParentMainScreenState extends State<ParentMainScreen> {
             elevation: 0,
             items: const [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home_rounded),
+                icon: Icon(Icons.home_outlined),
+                activeIcon: Icon(Icons.home_rounded),
                 label: 'Trang chủ',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.task_alt_rounded),
-                label: 'Nhiệm vụ',
+                icon: Icon(Icons.assignment_outlined),
+                activeIcon: Icon(Icons.assignment_rounded),
+                label: 'Task',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.card_giftcard_rounded),
-                label: 'Thưởng',
+                icon: Icon(Icons.workspace_premium_outlined),
+                activeIcon: Icon(Icons.workspace_premium_rounded),
+                label: 'Nâng cấp gói',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.workspace_premium_rounded),
-                label: 'Nâng cấp',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.settings_rounded),
-                label: 'Cài đặt',
+                icon: Icon(Icons.person_outline_rounded),
+                activeIcon: Icon(Icons.person_rounded),
+                label: 'Tài khoản',
               ),
             ],
           ),

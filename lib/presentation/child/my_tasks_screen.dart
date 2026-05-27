@@ -6,6 +6,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/models/models.dart';
 import '../../data/providers/providers.dart';
 import '../../shared/widgets/widgets.dart';
+import '../../core/utils/ui_helpers.dart';
 
 class MyTasksScreen extends StatefulWidget {
   final FamilyTask? initialTask;
@@ -220,7 +221,7 @@ class _TaskList extends StatelessWidget {
                         child: const Row(
                           children: [
                             Icon(Icons.hourglass_bottom_rounded, size: 16, color: AppColors.secondary),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Text('Chờ duyệt...', style: TextStyle(color: AppColors.secondary, fontWeight: FontWeight.w900, fontSize: 13)),
                           ],
                         ),
@@ -245,25 +246,16 @@ class _TaskList extends StatelessWidget {
       if (!context.mounted) return;
       
       // Hiển thị loading
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: const Text('Đang nộp minh chứng...'),
-        duration: const Duration(seconds: 1),
-      ));
+      UIHelpers.showMessageBox(context, 'Thông báo', 'Đang nộp minh chứng...');
 
       final bytes = await image.readAsBytes();
       final success = await context.read<TaskProvider>().submitTask(taskId, null, bytes, image.name);
 
       if (!context.mounted) return;
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('✅ Đã nộp minh chứng thành công!'),
-          backgroundColor: AppColors.approved,
-        ));
+        UIHelpers.showMessageBox(context, 'Thành công', '✅ Đã nộp minh chứng thành công!');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('❌ Có lỗi xảy ra khi nộp.'),
-          backgroundColor: AppColors.rejected,
-        ));
+        UIHelpers.showMessageBox(context, 'Lỗi', '❌ Có lỗi xảy ra khi nộp.', isError: true);
       }
     }
   }

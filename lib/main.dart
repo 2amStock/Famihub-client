@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'data/providers/providers.dart';
 import 'data/services/api_service.dart';
-import 'presentation/auth/login_screen.dart';
+import 'presentation/auth/onboarding_screen.dart';
 import 'presentation/parent/parent_main_screen.dart';
 import 'presentation/child/child_main_screen.dart';
 
@@ -72,7 +72,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     }
     
     if (!auth.isLoggedIn) {
-      return const LoginScreen();
+      return const OnboardingScreen();
     }
     
     return auth.user!.isParent 

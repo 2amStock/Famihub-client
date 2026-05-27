@@ -4,8 +4,9 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/providers.dart';
 import '../../shared/widgets/widgets.dart';
-import '../auth/login_screen.dart';
 import 'my_tasks_screen.dart';
+import 'child_rewards_screen.dart';
+import '../../core/utils/ui_helpers.dart';
 
 class ChildHomeScreen extends StatefulWidget {
   const ChildHomeScreen({super.key});
@@ -29,12 +30,10 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
     final auth = context.watch<AuthProvider>();
     final family = context.watch<FamilyProvider>();
     final tasks = context.watch<TaskProvider>();
-    final user = auth.user!;
 
-    final myPending = tasks.tasks.where((t) =>
-        t.isPending || t.isInProgress || t.isRejected).toList();
-    final mySubmitted = tasks.tasks.where((t) => t.isSubmitted).toList();
-    final myDone = tasks.tasks.where((t) => t.isApproved).toList();
+    final myPending = tasks.tasks
+        .where((t) => t.isPending || t.isInProgress || t.isRejected)
+        .toList();
 
     return Scaffold(
       body: Container(
@@ -51,189 +50,306 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
             },
             child: CustomScrollView(
               slivers: [
-                // Header
+                // Custom AppBar
                 SliverToBoxAdapter(
-                  child: Container(
-                    margin: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                    padding: const EdgeInsets.all(28),
-                    decoration: BoxDecoration(
-                      gradient: AppColors.childGradient,
-                      borderRadius: BorderRadius.circular(32),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.secondary.withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        // const Icon(Icons.menu_rounded,
+                        //     size: 28, color: AppColors.textPrimary),
                         Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(
-                                color: Colors.white24,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 2),
-                              ),
-                              child: const CircleAvatar(
-                                radius: 28,
-                                backgroundColor: Colors.white,
-                                child: Icon(Icons.face_retouching_natural_rounded, size: 28, color: AppColors.secondary),
-                              ),
+                            Text(
+                              'FAMI',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    color: AppColors.secondary,
+                                    fontWeight: FontWeight.w900,
+                                  ),
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Chào mừng trở lại,',
-                                      style: TextStyle(
-                                          color: Colors.white.withOpacity(0.8), fontSize: 13, fontWeight: FontWeight.w500)),
-                                  Text(user.name,
-                                      style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.w900,
-                                          letterSpacing: 0.5)),
-                                  const SizedBox(height: 2),
-                                ],
-                              ),
+                            Text(
+                              ' HUB',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w900,
+                                  ),
                             ),
-                            const SizedBox(width: 16),
                           ],
                         ),
-                        const SizedBox(height: 24),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: Colors.white.withOpacity(0.2)),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
+                        Stack(
+                          children: [
+                            const Icon(Icons.notifications_none_rounded,
+                                size: 28, color: AppColors.textPrimary),
+                            Positioned(
+                              right: 2,
+                              top: 2,
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
                                   shape: BoxShape.circle,
+                                  border:
+                                      Border.all(color: Colors.white, width: 2),
                                 ),
-                                child: const Icon(Icons.stars_rounded, color: Color(0xFFFFD700), size: 24),
                               ),
-                              const SizedBox(width: 16),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('ĐIỂM TÍCH LŨY',
-                                      style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
-                                  Text('${auth.user?.points ?? 0}',
-                                      style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900, height: 1)),
-                                ],
-                              ),
-                              const Spacer(),
-                              const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white38, size: 16),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ),
 
-                // Family join card
-                if (family.family == null && !family.loading)
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: _JoinFamilyCard(),
+                // Greeting & House Image
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 16),
+                            Text(
+                              'Xin chào, 👋',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Chào mừng bạn đến với\nFami Hub!',
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w900,
+                                height: 1.2,
+                              ),
+                            ),
+                            // Space for house image
+                          ],
+                        ),
+                        // Positioned(
+                        //   right: -20,
+                        //   bottom: 0,
+                        //   child: Image.asset(
+                        //     '', // Temporary placeholder for 3D house
+                        //     height: 160,
+                        //     fit: BoxFit.contain,
+                        //   ),
+                        // ),
+                      ],
                     ),
                   ),
+                ),
 
-                // Family badge
-                if (family.family != null)
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                              color: AppColors.secondary.withOpacity(0.5)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.home_rounded,
-                                color: AppColors.primary, size: 24),
-                            const SizedBox(width: 10),
-                            Text(family.family!.name,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16)),
-                            const Spacer(),
-                            Text('${family.family!.members.length} thành viên',
-                                style: const TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 13)),
-                          ],
+                // Points Display (New elegant design)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.secondary.withOpacity(0.3),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.stars_rounded,
+                                color: Color(0xFFFFD700), size: 32),
+                          ),
+                          const SizedBox(width: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('ĐIỂM TÍCH LŨY',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1)),
+                              Text('${auth.user?.points ?? 0}',
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 36,
+                                      fontWeight: FontWeight.w900,
+                                      height: 1)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Search Bar
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Bạn cần tìm gì?',
+                          hintStyle: const TextStyle(
+                              color: AppColors.textHint, fontSize: 15),
+                          prefixIcon: const Icon(Icons.search_rounded,
+                              color: AppColors.textHint),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          fillColor: Colors.transparent,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 16),
+                          suffixIcon: Container(
+                            margin: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.search_rounded,
+                                color: Colors.white, size: 20),
+                          ),
                         ),
                       ),
                     ),
                   ),
-
-                const SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-                // Stats
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: _StatCard(
-                                icon: Icons.assignment_rounded,
-                                label: 'Cần làm',
-                                count: myPending.length,
-                                color: AppColors.pending)),
-                        const SizedBox(width: 12),
-                        Expanded(
-                            child: _StatCard(
-                                icon: Icons.upload_rounded,
-                                label: 'Chờ duyệt',
-                                count: mySubmitted.length,
-                                color: AppColors.submitted)),
-                        const SizedBox(width: 12),
-                        Expanded(
-                            child: _StatCard(
-                                icon: Icons.emoji_events_rounded,
-                                label: 'Đã xong',
-                                count: myDone.length,
-                                color: AppColors.approved)),
-                      ],
-                    ),
-                  ),
                 ),
 
-                const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
-                // Quick actions
+                // Categories
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Nhiệm vụ của tôi',
-                            style: Theme.of(context).textTheme.titleLarge),
+                        _CategoryItem(
+                          icon: Icons.task_alt_rounded,
+                          label: 'Nhiệm vụ',
+                          color: AppColors.secondary,
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const MyTasksScreen()));
+                          },
+                        ),
+                        _CategoryItem(
+                          icon: Icons.family_restroom_rounded,
+                          label: 'Gia đình',
+                          color: AppColors.pending,
+                          onTap: () {
+                            final familyProvider = context.read<FamilyProvider>();
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => Dialog(
+                                backgroundColor: Colors.transparent,
+                                insetPadding: const EdgeInsets.all(20),
+                                child: familyProvider.family == null
+                                    ? _JoinFamilyCard()
+                                    : _ChildFamilyInfoCard(family: familyProvider),
+                              ),
+                            );
+                          },
+                        ),
+                        _CategoryItem(
+                          icon: Icons.storefront_rounded,
+                          label: 'Cửa hàng',
+                          color: AppColors.primary,
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const ChildRewardsScreen()));
+                          },
+                        ),
+                        _CategoryItem(
+                          icon: Icons.emoji_events_rounded,
+                          label: 'Xếp hạng',
+                          color: AppColors.approved,
+                          onTap: () {
+                            UIHelpers.showMessageBox(context, 'Tính năng đang phát triển', 'Bảng xếp hạng sẽ sớm được ra mắt trong bản cập nhật tới!');
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+                // Family join card if not in family
+                if (family.family == null && !family.loading)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      child: _JoinFamilyCard(),
+                    ),
+                  ),
+
+                // Quick actions / Recent Tasks
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Nhiệm vụ của tôi',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
                         TextButton(
-                          onPressed: () => Navigator.push(context,
+                          onPressed: () => Navigator.push(
+                              context,
                               MaterialPageRoute(
                                   builder: (_) => const MyTasksScreen())),
-                          child: const Text('Xem tất cả →'),
+                          child: const Text(
+                            'Xem tất cả',
+                            style: TextStyle(
+                              color: AppColors.secondary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -274,10 +390,11 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 6),
                           child: GestureDetector(
-                            onTap: () => Navigator.push(ctx,
+                            onTap: () => Navigator.push(
+                                ctx,
                                 MaterialPageRoute(
-                                    builder: (_) => MyTasksScreen(
-                                        initialTask: task))),
+                                    builder: (_) =>
+                                        MyTasksScreen(initialTask: task))),
                             child: _ChildTaskCard(task: task),
                           ),
                         );
@@ -358,82 +475,29 @@ class _JoinFamilyCardState extends State<_JoinFamilyCard> {
                     .read<FamilyProvider>()
                     .joinFamily(_ctrl.text.trim());
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(ok
+                  UIHelpers.showMessageBox(
+                    context,
+                    ok ? 'Thành công' : 'Lỗi',
+                    ok
                         ? 'Tham gia gia đình thành công! 🎉'
-                        : 'Mã mời không hợp lệ'),
-                    backgroundColor:
-                        ok ? AppColors.approved : AppColors.rejected,
-                  ));
+                        : 'Mã mời không hợp lệ',
+                    isError: !ok,
+                  );
                 }
               } catch (e) {
                 if (context.mounted) {
                   if (e.toString().contains('LIMIT_EXCEEDED')) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Gia đình này đã đạt giới hạn thành viên miễn phí. Phụ huynh cần nâng cấp gói!'),
-                      backgroundColor: AppColors.rejected,
-                    ));
+                    UIHelpers.showMessageBox(context, 'Lỗi',
+                        'Gia đình này đã đạt giới hạn thành viên miễn phí. Phụ huynh cần nâng cấp gói!',
+                        isError: true);
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Lỗi: $e'),
-                      backgroundColor: AppColors.rejected,
-                    ));
+                    UIHelpers.showMessageBox(context, 'Lỗi', 'Lỗi: $e',
+                        isError: true);
                   }
                 }
               }
             },
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final int count;
-  final Color color;
-
-  const _StatCard(
-      {required this.icon,
-      required this.label,
-      required this.count,
-      required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 22),
-          ),
-          const SizedBox(height: 12),
-          Text('$count',
-              style: TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.textPrimary, height: 1)),
-          const SizedBox(height: 4),
-          Text(label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 10, color: AppColors.textSecondary, fontWeight: FontWeight.w700, letterSpacing: 0.2)),
         ],
       ),
     );
@@ -447,14 +511,16 @@ class _ChildTaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isRejected = task.status == 'Rejected';
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isRejected ? AppColors.rejected.withOpacity(0.5) : Colors.black.withOpacity(0.05),
+          color: isRejected
+              ? AppColors.rejected.withOpacity(0.5)
+              : Colors.black.withOpacity(0.05),
           width: isRejected ? 2 : 1,
         ),
         boxShadow: [
@@ -468,17 +534,20 @@ class _ChildTaskCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 52, height: 52,
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
               color: const Color(0xFFF2F2F7),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
-              task.status == 'Approved' 
-                  ? Icons.check_circle_rounded 
-                  : (isRejected ? Icons.error_outline_rounded : Icons.assignment_rounded),
-              color: task.status == 'Approved' 
-                  ? AppColors.approved 
+              task.status == 'Approved'
+                  ? Icons.check_circle_rounded
+                  : (isRejected
+                      ? Icons.error_outline_rounded
+                      : Icons.assignment_rounded),
+              color: task.status == 'Approved'
+                  ? AppColors.approved
                   : (isRejected ? AppColors.rejected : AppColors.secondary),
               size: 26,
             ),
@@ -501,13 +570,15 @@ class _ChildTaskCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today_outlined, size: 12, color: AppColors.textHint),
+                    const Icon(Icons.calendar_today_outlined,
+                        size: 12, color: AppColors.textHint),
                     const SizedBox(width: 4),
                     Text(
-                      task.dueDate != null 
-                          ? DateFormat('HH:mm, dd/MM').format(task.dueDate!) 
+                      task.dueDate != null
+                          ? DateFormat('HH:mm, dd/MM').format(task.dueDate!)
                           : 'Không thời hạn',
-                      style: const TextStyle(fontSize: 12, color: AppColors.textHint),
+                      style: const TextStyle(
+                          fontSize: 12, color: AppColors.textHint),
                     ),
                   ],
                 ),
@@ -522,6 +593,189 @@ class _ChildTaskCard extends StatelessWidget {
               const SizedBox(height: 6),
               PointsBadge(points: task.points),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CategoryItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _CategoryItem({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.2),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: color, size: 28),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChildFamilyInfoCard extends StatelessWidget {
+  final FamilyProvider family;
+  const _ChildFamilyInfoCard({required this.family});
+
+  @override
+  Widget build(BuildContext context) {
+    final f = family.family!;
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.home_rounded,
+                        color: AppColors.primary, size: 24),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(f.name,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 18,
+                                color: AppColors.textPrimary)),
+                        Text('${f.members.length} thành viên đang tham gia',
+                            style: const TextStyle(
+                                fontSize: 12, color: AppColors.textSecondary)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 24), // For close button spacing
+                ],
+              ),
+              const SizedBox(height: 24),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Thành viên',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 350),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: f.members.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 8),
+                  itemBuilder: (context, index) {
+                    final member = f.members[index];
+                    final isParent = member.role == 'Parent';
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isParent ? AppColors.primary.withValues(alpha: 0.1) : Colors.white,
+                        border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20,
+                            backgroundColor: isParent ? AppColors.primary : AppColors.secondary,
+                            child: Text(
+                              member.name.isNotEmpty ? member.name[0].toUpperCase() : '?',
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  member.name,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                                ),
+                                Text(
+                                  isParent ? 'Phụ huynh' : 'Con cái - ${member.points} điểm',
+                                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+          Positioned(
+            top: -12,
+            right: -12,
+            child: IconButton(
+              icon: const Icon(Icons.close_rounded, color: AppColors.textSecondary),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
           ),
         ],
       ),

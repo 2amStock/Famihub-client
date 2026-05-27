@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/models.dart';
 import '../../data/providers/providers.dart';
+import '../../core/utils/ui_helpers.dart';
 
 class ChildRewardsScreen extends StatefulWidget {
   const ChildRewardsScreen({super.key});
@@ -31,7 +32,7 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
 
   void _showRedeemConfirm(Reward reward, int currentPoints) {
     if (currentPoints < reward.requiredPoints) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chưa đủ điểm để đổi phần thưởng này')));
+      UIHelpers.showMessageBox(context, 'Thông báo', 'Chưa đủ điểm để đổi phần thưởng này', isError: true);
       return;
     }
 
@@ -51,10 +52,10 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
                 if (mounted) {
                   // Reload user to update points
                   await context.read<AuthProvider>().refreshUser();
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đổi phần thưởng thành công! Đang chờ duyệt.')));
+                  UIHelpers.showMessageBox(context, 'Thành công', 'Đổi phần thưởng thành công! Đang chờ duyệt.');
                 }
               } catch (e) {
-                if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+                if (mounted) UIHelpers.showMessageBox(context, 'Lỗi', e.toString(), isError: true);
               }
             },
             child: const Text('Đổi ngay'),
@@ -202,7 +203,7 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
               contentPadding: const EdgeInsets.all(16),
               leading: Container(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: AppColors.background, shape: BoxShape.circle),
+                decoration: const BoxDecoration(color: AppColors.background, shape: BoxShape.circle),
                 child: const Icon(Icons.redeem, color: AppColors.textHint),
               ),
               title: Text(req.rewardTitle, style: const TextStyle(fontWeight: FontWeight.bold)),

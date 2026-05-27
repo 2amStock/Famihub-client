@@ -5,6 +5,7 @@ import 'package:pinput/pinput.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/providers.dart';
 import 'login_screen.dart';
+import '../../core/utils/ui_helpers.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String email;
@@ -53,23 +54,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     if (!mounted) return;
 
     if (ok) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Xác minh thành công! Vui lòng đăng nhập.'),
-          backgroundColor: AppColors.approved,
-        ),
-      );
+      UIHelpers.showMessageBox(context, 'Thành công', 'Xác minh thành công! Vui lòng đăng nhập.');
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const LoginScreen()),
         (route) => false,
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(auth.error ?? 'Mã xác thực không đúng'),
-          backgroundColor: AppColors.rejected,
-        ),
-      );
+      UIHelpers.showMessageBox(context, 'Lỗi', auth.error ?? 'Mã xác thực không đúng', isError: true);
     }
   }
 
@@ -79,20 +70,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     if (!mounted) return;
 
     if (ok) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Đã gửi lại mã xác thực!'),
-          backgroundColor: AppColors.approved,
-        ),
-      );
+      UIHelpers.showMessageBox(context, 'Thành công', 'Đã gửi lại mã xác thực!');
       _startTimer();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(auth.error ?? 'Không thể gửi lại mã'),
-          backgroundColor: AppColors.rejected,
-        ),
-      );
+      UIHelpers.showMessageBox(context, 'Lỗi', auth.error ?? 'Không thể gửi lại mã', isError: true);
     }
   }
 

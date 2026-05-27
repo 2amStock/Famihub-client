@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:famihub_flutter/core/utils/ui_helpers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/models.dart';
 import '../../data/providers/providers.dart';
@@ -42,14 +43,14 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       final updated = tasks.tasks.firstWhere((t) => t.id == _task.id,
           orElse: () => _task);
       setState(() => _task = updated);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(approved
+      UIHelpers.showMessageBox(
+        context,
+        approved ? 'Thành công' : 'Thông báo',
+        approved
             ? '✅ Đã duyệt nhiệm vụ! Con được cộng ${_task.points} điểm 🌟'
-            : '❌ Đã từ chối nhiệm vụ.'),
-        backgroundColor: approved ? AppColors.approved : AppColors.rejected,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ));
+            : '❌ Đã từ chối nhiệm vụ.',
+        isError: !approved,
+      );
     }
   }
 
