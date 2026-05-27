@@ -7,9 +7,11 @@ import '../../shared/widgets/widgets.dart';
 import 'my_tasks_screen.dart';
 import 'child_rewards_screen.dart';
 import '../../core/utils/ui_helpers.dart';
+import '../shared/family_calendar_screen.dart';
 
 class ChildHomeScreen extends StatefulWidget {
-  const ChildHomeScreen({super.key});
+  final Function(int)? onNavigate;
+  const ChildHomeScreen({super.key, this.onNavigate});
 
   @override
   State<ChildHomeScreen> createState() => _ChildHomeScreenState();
@@ -83,23 +85,38 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
                             ),
                           ],
                         ),
-                        Stack(
+                        Row(
                           children: [
-                            const Icon(Icons.notifications_none_rounded,
-                                size: 28, color: AppColors.textPrimary),
-                            Positioned(
-                              right: 2,
-                              top: 2,
-                              child: Container(
-                                width: 10,
-                                height: 10,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary,
-                                  shape: BoxShape.circle,
-                                  border:
-                                      Border.all(color: Colors.white, width: 2),
+                            IconButton(
+                              icon: const Icon(Icons.calendar_today_rounded,
+                                  size: 26, color: AppColors.textPrimary),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const FamilyCalendarScreen(isParent: false)),
+                                );
+                              },
+                            ),
+                            Stack(
+                              children: [
+                                const Icon(Icons.notifications_none_rounded,
+                                    size: 28, color: AppColors.textPrimary),
+                                Positioned(
+                                  right: 2,
+                                  top: 2,
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary,
+                                      shape: BoxShape.circle,
+                                      border:
+                                          Border.all(color: Colors.white, width: 2),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
@@ -266,10 +283,14 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
                           label: 'Nhiệm vụ',
                           color: AppColors.secondary,
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const MyTasksScreen()));
+                            if (widget.onNavigate != null) {
+                              widget.onNavigate!(1);
+                            } else {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const MyTasksScreen()));
+                            }
                           },
                         ),
                         _CategoryItem(
@@ -295,7 +316,11 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
                           label: 'Cửa hàng',
                           color: AppColors.primary,
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => const ChildRewardsScreen()));
+                            if (widget.onNavigate != null) {
+                              widget.onNavigate!(2);
+                            } else {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const ChildRewardsScreen()));
+                            }
                           },
                         ),
                         _CategoryItem(
@@ -339,10 +364,16 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const MyTasksScreen())),
+                          onPressed: () {
+                            if (widget.onNavigate != null) {
+                              widget.onNavigate!(1);
+                            } else {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const MyTasksScreen()));
+                            }
+                          },
                           child: const Text(
                             'Xem tất cả',
                             style: TextStyle(
@@ -413,8 +444,14 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
         text: 'Làm việc ngay',
         width: 200,
         icon: Icons.play_arrow_rounded,
-        onPressed: () => Navigator.push(
-            context, MaterialPageRoute(builder: (_) => const MyTasksScreen())),
+        onPressed: () {
+          if (widget.onNavigate != null) {
+            widget.onNavigate!(1);
+          } else {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => const MyTasksScreen()));
+          }
+        },
       ),
     );
   }

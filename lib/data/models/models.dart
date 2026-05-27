@@ -1,5 +1,6 @@
-            import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import '../../core/constants/api_constants.dart';
+export 'family_event_model.dart';
 
 class AppUser {
   final int id;

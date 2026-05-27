@@ -7,10 +7,14 @@ import '../../data/providers/providers.dart';
 import 'login_screen.dart';
 import '../../core/utils/ui_helpers.dart';
 
+import '../parent/parent_main_screen.dart';
+import '../child/child_main_screen.dart';
+
 class OtpVerificationScreen extends StatefulWidget {
   final String email;
+  final String? password;
 
-  const OtpVerificationScreen({super.key, required this.email});
+  const OtpVerificationScreen({super.key, required this.email, this.password});
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -54,6 +58,22 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     if (!mounted) return;
 
     if (ok) {
+      if (widget.password != null) {
+        final loginOk = await auth.login(widget.email, widget.password!);
+        if (loginOk && mounted) {
+          UIHelpers.showMessageBox(context, 'Thành công', 'Xác minh thành công! Đang đăng nhập...');
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) => auth.user!.isParent
+                  ? const ParentMainScreen()
+                  : const ChildMainScreen(),
+            ),
+            (route) => false,
+          );
+          return;
+        }
+      }
+
       UIHelpers.showMessageBox(context, 'Thành công', 'Xác minh thành công! Vui lòng đăng nhập.');
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const LoginScreen()),

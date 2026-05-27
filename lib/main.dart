@@ -20,6 +20,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => FamilyProvider(apiService)),
         ChangeNotifierProvider(create: (_) => TaskProvider(apiService)),
         ChangeNotifierProvider(create: (_) => RewardProvider(apiService)),
+        ChangeNotifierProvider(create: (_) => FamilyEventProvider(apiService)),
       ],
       child: const FamiHubApp(),
     ),

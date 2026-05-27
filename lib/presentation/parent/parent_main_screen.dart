@@ -14,11 +14,11 @@ class ParentMainScreen extends StatefulWidget {
 class _ParentMainScreenState extends State<ParentMainScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = const [
-    ParentHomeScreen(),
-    TaskListScreen(),
-    SubscriptionScreen(),
-    ParentSettingsScreen(),
+  List<Widget> get _screens => [
+    ParentHomeScreen(onNavigate: (index) => _onItemTapped(index)),
+    const TaskListScreen(),
+    const SubscriptionScreen(),
+    const ParentSettingsScreen(),
   ];
 
   void _onItemTapped(int index) {

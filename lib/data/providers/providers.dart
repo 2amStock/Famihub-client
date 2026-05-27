@@ -433,3 +433,66 @@ class RewardProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+class FamilyEventProvider extends ChangeNotifier {
+  final ApiService _api;
+
+  FamilyEventProvider(this._api);
+
+  List<FamilyEvent> _events = [];
+  bool _loading = false;
+  String? _error;
+
+  List<FamilyEvent> get events => _events;
+  bool get loading => _loading;
+  String? get error => _error;
+
+  Future<void> loadEvents() async {
+    _setLoading(true);
+    try {
+      _events = await _api.getFamilyEvents();
+      _error = null;
+    } catch (e) {
+      _error = 'Không thể tải sự kiện gia đình';
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<FamilyEvent?> createEvent({
+    required String title,
+    String? description,
+    required DateTime startTime,
+    required DateTime endTime,
+  }) async {
+    try {
+      final event = await _api.createFamilyEvent(
+        title: title,
+        description: description,
+        startTime: startTime,
+        endTime: endTime,
+      );
+      _events.add(event);
+      notifyListeners();
+      return event;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<bool> deleteEvent(int id) async {
+    try {
+      await _api.deleteFamilyEvent(id);
+      _events.removeWhere((e) => e.id == id);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  void _setLoading(bool val) {
+    _loading = val;
+    notifyListeners();
+  }
+}
