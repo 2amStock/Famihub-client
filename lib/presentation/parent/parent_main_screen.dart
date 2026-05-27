@@ -4,6 +4,7 @@ import 'parent_home_screen.dart';
 import 'task_list_screen.dart';
 import '../subscription/subscription_screen.dart';
 import 'parent_settings_screen.dart';
+import 'parent_rewards_screen.dart';
 
 class ParentMainScreen extends StatefulWidget {
   const ParentMainScreen({super.key});
@@ -18,6 +19,7 @@ class _ParentMainScreenState extends State<ParentMainScreen> {
   final List<Widget> _screens = const [
     ParentHomeScreen(),
     TaskListScreen(),
+    ParentRewardsScreen(),
     SubscriptionScreen(),
     ParentSettingsScreen(),
   ];
@@ -65,6 +67,10 @@ class _ParentMainScreenState extends State<ParentMainScreen> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.task_alt_rounded),
                 label: 'Nhiệm vụ',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.card_giftcard_rounded),
+                label: 'Thưởng',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.workspace_premium_rounded),

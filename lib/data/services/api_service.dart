@@ -191,4 +191,58 @@ class ApiService {
   Future<void> deleteTask(int taskId) async {
     await _dio.delete('/Tasks/$taskId');
   }
+
+  // ── Rewards ──────────────────────────────────────────────────────────────
+
+  Future<List<Reward>> getRewards() async {
+    final res = await _dio.get('/Rewards');
+    return (res.data as List).map((r) => Reward.fromJson(r)).toList();
+  }
+
+  Future<Reward> createReward({required String title, String? description, required int requiredPoints}) async {
+    final res = await _dio.post('/Rewards', data: {
+      'title': title,
+      'description': description,
+      'requiredPoints': requiredPoints,
+    });
+    return Reward.fromJson(res.data);
+  }
+
+  Future<Reward> updateReward(int id, {String? title, String? description, int? requiredPoints}) async {
+    final Map<String, dynamic> body = {};
+    if (title != null) body['title'] = title;
+    if (description != null) body['description'] = description;
+    if (requiredPoints != null) body['requiredPoints'] = requiredPoints;
+    final res = await _dio.put('/Rewards/$id', data: body);
+    return Reward.fromJson(res.data);
+  }
+
+  Future<void> deleteReward(int id) async {
+    await _dio.delete('/Rewards/$id');
+  }
+
+  Future<List<RewardRedemption>> getRedemptions() async {
+    final res = await _dio.get('/Rewards/redemptions');
+    return (res.data as List).map((rr) => RewardRedemption.fromJson(rr)).toList();
+  }
+
+  Future<RewardRedemption> redeemReward(int rewardId) async {
+    try {
+      final res = await _dio.post('/Rewards/$rewardId/redeem');
+      return RewardRedemption.fromJson(res.data);
+    } on DioException catch (e) {
+      if (e.response?.data != null && e.response?.data['message'] != null) {
+        throw Exception(e.response?.data['message']);
+      }
+      rethrow;
+    }
+  }
+
+  Future<RewardRedemption> approveRedemption(int redemptionId, bool approved, {String? parentNote}) async {
+    final res = await _dio.post('/Rewards/redemptions/$redemptionId/approve', data: {
+      'approved': approved,
+      'parentNote': parentNote,
+    });
+    return RewardRedemption.fromJson(res.data);
+  }
 }

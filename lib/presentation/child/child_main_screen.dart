@@ -3,6 +3,7 @@ import '../../core/theme/app_theme.dart';
 import 'child_home_screen.dart';
 import 'my_tasks_screen.dart';
 import 'child_settings_screen.dart';
+import 'child_rewards_screen.dart';
 
 class ChildMainScreen extends StatefulWidget {
   const ChildMainScreen({super.key});
@@ -17,6 +18,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
   final List<Widget> _screens = const [
     ChildHomeScreen(),
     MyTasksScreen(),
+    ChildRewardsScreen(),
     ChildSettingsScreen(),
   ];
 
@@ -63,6 +65,10 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.task_alt_rounded),
                 label: 'Việc của tôi',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.storefront_rounded),
+                label: 'Cửa hàng',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.settings_rounded),

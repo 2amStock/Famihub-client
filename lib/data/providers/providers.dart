@@ -282,3 +282,154 @@ class FamilyProvider extends ChangeNotifier {
   List<AppUser> get parents =>
       _family?.members.where((m) => m.isParent).toList() ?? [];
 }
+
+class RewardProvider extends ChangeNotifier {
+  final ApiService _api;
+
+  RewardProvider(this._api);
+
+  List<Reward> _rewards = [];
+  List<RewardRedemption> _redemptions = [];
+  bool _loading = false;
+  String? _error;
+
+  List<Reward> get rewards => _rewards;
+  List<RewardRedemption> get redemptions => _redemptions;
+  bool get loading => _loading;
+  String? get error => _error;
+
+  List<RewardRedemption> get pendingRedemptions =>
+      _redemptions.where((r) => r.isPending).toList();
+  List<RewardRedemption> get historyRedemptions =>
+      _redemptions.where((r) => !r.isPending).toList();
+
+  Future<void> loadRewards() async {
+    _setLoading(true);
+    try {
+      _rewards = await _api.getRewards();
+      _error = null;
+    } catch (e) {
+      _error = 'Không thể tải danh sách phần thưởng';
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> loadRedemptions() async {
+    _setLoading(true);
+    try {
+      _redemptions = await _api.getRedemptions();
+      _error = null;
+    } catch (e) {
+      _error = 'Không thể tải lịch sử đổi thưởng';
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> loadAll() async {
+    _setLoading(true);
+    try {
+      final futures = await Future.wait([
+        _api.getRewards(),
+        _api.getRedemptions(),
+      ]);
+      _rewards = futures[0] as List<Reward>;
+      _redemptions = futures[1] as List<RewardRedemption>;
+      _error = null;
+    } catch (e) {
+      _error = 'Không thể tải dữ liệu phần thưởng';
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<Reward?> createReward({
+    required String title,
+    String? description,
+    required int requiredPoints,
+  }) async {
+    try {
+      final reward = await _api.createReward(
+        title: title,
+        description: description,
+        requiredPoints: requiredPoints,
+      );
+      _rewards.insert(0, reward);
+      notifyListeners();
+      return reward;
+    } catch (e) {
+      if (e is DioException && e.response?.statusCode == 400 && e.response?.data != null) {
+        throw Exception(e.response?.data['message'] ?? 'Lỗi tạo phần thưởng');
+      }
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<bool> updateReward(
+    int id, {
+    String? title,
+    String? description,
+    int? requiredPoints,
+  }) async {
+    try {
+      final updated = await _api.updateReward(
+        id,
+        title: title,
+        description: description,
+        requiredPoints: requiredPoints,
+      );
+      final idx = _rewards.indexWhere((r) => r.id == id);
+      if (idx != -1) _rewards[idx] = updated;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      if (e is DioException && e.response?.statusCode == 400 && e.response?.data != null) {
+        throw Exception(e.response?.data['message'] ?? 'Lỗi cập nhật phần thưởng');
+      }
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<bool> deleteReward(int id) async {
+    try {
+      await _api.deleteReward(id);
+      _rewards.removeWhere((r) => r.id == id);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      if (e is DioException && e.response?.statusCode == 400 && e.response?.data != null) {
+        throw Exception(e.response?.data['message'] ?? 'Lỗi xóa phần thưởng');
+      }
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<RewardRedemption?> redeemReward(int rewardId) async {
+    try {
+      final redemption = await _api.redeemReward(rewardId);
+      _redemptions.insert(0, redemption);
+      notifyListeners();
+      return redemption;
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  Future<bool> approveRedemption(int redemptionId, bool approved, {String? parentNote}) async {
+    try {
+      final updated = await _api.approveRedemption(redemptionId, approved, parentNote: parentNote);
+      final idx = _redemptions.indexWhere((r) => r.id == redemptionId);
+      if (idx != -1) _redemptions[idx] = updated;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  void _setLoading(bool val) {
+    _loading = val;
+    notifyListeners();
+  }
+}
