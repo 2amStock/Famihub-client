@@ -1,37 +1,42 @@
 name: Build iOS IPA
+
 on:
-  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+  workflow_dispatch:
+
 jobs:
   build-ios:
     name: Build iOS App
-    runs-on: macos-latest # This is the magic part: it uses a Mac in the cloud!
+    runs-on: macos-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           
       - name: Install dependencies
-        working-directory: ./famihub_flutter
         run: flutter pub get
+
       - name: Build iOS App (Unsigned)
-        working-directory: ./famihub_flutter
         run: |
           flutter build ios --release --no-codesign
           
-          # Package the Runner.app into an unsigned .ipa file
+          # Đóng gói file Runner.app thành file .ipa (unsigned)
           mkdir -p Payload
           mv build/ios/iphoneos/Runner.app Payload/
           zip -r FamiHub-iOS-Unsigned.ipa Payload
+
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: FamiHub-iOS-Unsigned-IPA
-          path: famihub_flutter/FamiHub-iOS-Unsigned.ipa
+          path: FamiHub-iOS-Unsigned.ipa
