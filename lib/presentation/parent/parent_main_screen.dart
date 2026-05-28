@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'parent_home_screen.dart';
 import 'task_list_screen.dart';
-import '../subscription/subscription_screen.dart';
+import '../shared/meal_suggestion_screen.dart';
 import 'parent_settings_screen.dart';
+
 class ParentMainScreen extends StatefulWidget {
   const ParentMainScreen({super.key});
 
@@ -17,7 +18,7 @@ class _ParentMainScreenState extends State<ParentMainScreen> {
   List<Widget> get _screens => [
     ParentHomeScreen(onNavigate: (index) => _onItemTapped(index)),
     const TaskListScreen(),
-    const SubscriptionScreen(),
+    const MealSuggestionScreen(),
     const ParentSettingsScreen(),
   ];
 
@@ -68,9 +69,9 @@ class _ParentMainScreenState extends State<ParentMainScreen> {
                 label: 'Task',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.workspace_premium_outlined),
-                activeIcon: Icon(Icons.workspace_premium_rounded),
-                label: 'Nâng cấp gói',
+                icon: Icon(Icons.auto_awesome_outlined),
+                activeIcon: Icon(Icons.auto_awesome_rounded),
+                label: 'Thực đơn AI',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person_outline_rounded),

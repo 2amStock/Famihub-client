@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:famihub_flutter/core/utils/ui_helpers.dart';
 import '../../core/theme/app_theme.dart';
-import '../../data/services/api_service.dart';
 import '../../data/providers/providers.dart';
+import '../../data/models/models.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -14,30 +14,41 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
-  bool _isLoading = false;
+  bool _isPaying = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SubscriptionProvider>().loadSubscriptionData();
+    });
+  }
 
   Future<void> _checkout(int planId) async {
-    setState(() => _isLoading = true);
-    final api = context.read<ApiService>();
+    setState(() => _isPaying = true);
+    final provider = context.read<SubscriptionProvider>();
     try {
-      final url = await api.createPaymentLink(planId);
-      setState(() => _isLoading = false);
+      final url = await provider.getPaymentLink(planId);
+      setState(() => _isPaying = false);
 
       if (url != null) {
-        if (!await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication)) {
+        if (!await launchUrl(Uri.parse(url),
+            mode: LaunchMode.externalApplication)) {
           if (mounted) {
-            UIHelpers.showMessageBox(context, 'Lỗi', 'Không thể mở trang thanh toán', isError: true);
+            UIHelpers.showMessageBox(
+                context, 'Lỗi', 'Không thể mở trang thanh toán',
+                isError: true);
           }
         }
       } else {
         if (mounted) {
-          UIHelpers.showMessageBox(context, 'Lỗi', 'Lỗi tạo link thanh toán', isError: true);
+          final error = provider.error ?? 'Lỗi tạo link thanh toán';
+          UIHelpers.showMessageBox(context, 'Lỗi', error, isError: true);
         }
       }
     } catch (e) {
-      setState(() => _isLoading = false);
+      setState(() => _isPaying = false);
       if (mounted) {
-        // Loại bỏ chữ "Exception: " nếu có
         final msg = e.toString().replaceAll('Exception: ', '');
         UIHelpers.showMessageBox(context, 'Lỗi', msg, isError: true);
       }
@@ -45,14 +56,30 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _buildPlanCard({
-    required String title,
-    required String price,
-    required List<String> features,
-    required int planId,
-    required bool isPopular,
-    required int currentPlanId,
+    required SubscriptionPlan plan,
+    required bool isCurrent,
   }) {
-    final isCurrent = planId == currentPlanId;
+    final isPopular = plan.name == 'FAMILY';
+
+    // Tạo danh sách features từ các boolean của plan
+    List<String> features = [
+      plan.maxMembers > 100
+          ? 'Không giới hạn thành viên'
+          : 'Tối đa ${plan.maxMembers} thành viên',
+      plan.maxTasksPerDay > 100
+          ? 'Không giới hạn công việc'
+          : 'Tối đa ${plan.maxTasksPerDay} công việc/ngày',
+    ];
+    if (plan.hasAI) features.add('Thực đơn AI thông minh');
+    if (plan.hasCalendar) features.add('Đồng bộ Lịch gia đình');
+    if (plan.hasShoppingList) features.add('Quản lý Shopping List');
+    if (plan.hasStudyTracking) features.add('Báo cáo học tập của con');
+    if (plan.hasAchievement) features.add('Hệ thống Thành tựu & Huy hiệu');
+    if (plan.name == 'FREE') features.add('Chỉ có phần thưởng cố định');
+
+    // Format giá tiền (VD: 119000 -> 119.000đ)
+    final priceStr =
+        '${plan.price.toInt()}đ / ${plan.durationType == 'MONTHLY' ? 'tháng' : 'năm'}';
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -60,7 +87,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: isPopular || isCurrent ? Border.all(color: AppColors.primary, width: 2) : null,
+        border: isPopular || isCurrent
+            ? Border.all(color: AppColors.primary, width: 2)
+            : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -76,7 +105,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             Align(
               alignment: Alignment.topRight,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 margin: const EdgeInsets.only(bottom: 8),
                 decoration: BoxDecoration(
                   color: AppColors.approved.withOpacity(0.1),
@@ -85,7 +115,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 ),
                 child: const Text(
                   'GÓI HIỆN TẠI',
-                  style: TextStyle(color: AppColors.approved, fontSize: 10, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: AppColors.approved,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             )
@@ -93,7 +126,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             Align(
               alignment: Alignment.topRight,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 margin: const EdgeInsets.only(bottom: 8),
                 decoration: BoxDecoration(
                   color: AppColors.primaryLight,
@@ -101,34 +135,51 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 ),
                 child: const Text(
                   'PHỔ BIẾN NHẤT',
-                  style: TextStyle(color: AppColors.primary, fontSize: 10, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
-          Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text(plan.name,
+              style:
+                  const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          Text(price, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: AppColors.primary)),
+          Text(priceStr,
+              style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.primary)),
           const SizedBox(height: 16),
           ...features.map((f) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.check_circle, color: AppColors.approved, size: 20),
+                    const Icon(Icons.check_circle,
+                        color: AppColors.approved, size: 20),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(f)),
+                    Expanded(
+                        child: Text(f, style: const TextStyle(height: 1.4))),
                   ],
                 ),
               )),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: isCurrent ? null : () => _checkout(planId),
+            onPressed: isCurrent ? null : () => _checkout(plan.id),
             style: ElevatedButton.styleFrom(
-              backgroundColor: isCurrent ? Colors.grey[300] : (isPopular ? AppColors.primary : Colors.grey[200]),
-              foregroundColor: isCurrent ? Colors.grey[600] : (isPopular ? Colors.white : Colors.black87),
+              backgroundColor: isCurrent
+                  ? Colors.grey[300]
+                  : (isPopular ? AppColors.primary : Colors.grey[200]),
+              foregroundColor: isCurrent
+                  ? Colors.grey[600]
+                  : (isPopular ? Colors.white : Colors.black87),
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
-            child: Text(isCurrent ? 'Đang sử dụng' : 'Chọn gói $title'),
+            child: Text(isCurrent ? 'Đang sử dụng' : 'Chọn gói ${plan.name}'),
           )
         ],
       ),
@@ -137,74 +188,57 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().user;
-    final currentPlanId = user?.currentPlanId ?? 1;
+    final subProvider = context.watch<SubscriptionProvider>();
+    final isLoading = subProvider.loading || _isPaying;
+    final currentPlanId = subProvider.currentSubscription?.plan.id ?? 1;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Nâng cấp FamiHub', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Nâng cấp FamiHub',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 0,
       ),
       body: Stack(
         children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                const Text(
-                  'Mở khóa toàn bộ tính năng và không giới hạn!',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                _buildPlanCard(
-                  title: 'FREE',
-                  price: '0đ / tháng',
-                  features: ['Tối đa 3 thành viên', 'Tối đa 5 công việc/ngày', 'Chỉ có phần thưởng cố định'],
-                  planId: 1,
-                  isPopular: false,
-                  currentPlanId: currentPlanId,
-                ),
-                _buildPlanCard(
-                  title: 'STARTER',
-                  price: '79.000đ / tháng',
-                  features: ['Tối đa 5 thành viên', 'Không giới hạn công việc', 'Phần thưởng tùy biến', 'Báo cáo học tập'],
-                  planId: 2,
-                  isPopular: false,
-                  currentPlanId: currentPlanId,
-                ),
-                _buildPlanCard(
-                  title: 'FAMILY',
-                  price: '119.000đ / tháng',
-                  features: [
-                    'Không giới hạn thành viên',
-                    'Full tính năng (Thực đơn AI, Lịch, Mua sắm...)',
-                    'Hệ thống Thành tựu',
-                  ],
-                  planId: 3,
-                  isPopular: true,
-                  currentPlanId: currentPlanId,
-                ),
-                _buildPlanCard(
-                  title: 'YEARLY',
-                  price: '1.199.000đ / năm',
-                  features: [
-                    'Đầy đủ tính năng gói FAMILY',
-                    'Tiết kiệm 229.000đ so với gói tháng',
-                    'Thanh toán tiện lợi 1 lần/năm',
-                  ],
-                  planId: 4,
-                  isPopular: false,
-                  currentPlanId: currentPlanId,
-                ),
-                const SizedBox(height: 32),
-              ],
+          if (!subProvider.loading &&
+              subProvider.plans.isEmpty &&
+              subProvider.error != null)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(subProvider.error!,
+                      style: const TextStyle(color: Colors.red)),
+                  TextButton(
+                    onPressed: () => subProvider.loadSubscriptionData(),
+                    child: const Text('Thử lại'),
+                  )
+                ],
+              ),
+            )
+          else if (!subProvider.loading)
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  const Text(
+                    'Mở khóa toàn bộ tính năng và không giới hạn!',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ...subProvider.plans.map((plan) => _buildPlanCard(
+                        plan: plan,
+                        isCurrent: plan.id == currentPlanId,
+                      )),
+                  const SizedBox(height: 32),
+                ],
+              ),
             ),
-          ),
-          if (_isLoading)
+          if (isLoading)
             Container(
               color: Colors.black.withOpacity(0.3),
               child: const Center(child: CircularProgressIndicator()),

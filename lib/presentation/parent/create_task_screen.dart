@@ -86,7 +86,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       if (!mounted) return;
       setState(() => _saving = false);
       if (task != null) {
-        UIHelpers.showMessageBox(context, 'Thành công', '✅ Đã tạo nhiệm vụ thành công!');
+        UIHelpers.showMessageBox(context, 'Thành công', 'Đã tạo nhiệm vụ thành công!');
         Navigator.pop(context, true);
       } else {
         UIHelpers.showMessageBox(context, 'Lỗi', 'Không thể tạo nhiệm vụ. Vui lòng thử lại.', isError: true);
@@ -95,9 +95,34 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       if (!mounted) return;
       setState(() => _saving = false);
       if (e.toString().contains('LIMIT_EXCEEDED')) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text('Đạt giới hạn gói cước', style: TextStyle(fontWeight: FontWeight.bold)),
+            content: Text(e.toString().split('LIMIT_EXCEEDED:').last.trim()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Đóng', style: TextStyle(color: AppColors.textHint)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                  );
+                },
+                child: const Text('Nâng cấp ngay'),
+              ),
+            ],
+          ),
         );
       } else {
         UIHelpers.showMessageBox(context, 'Lỗi', 'Lỗi: $e', isError: true);
@@ -233,7 +258,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                         ),
                         items: [
                           const DropdownMenuItem(
-                              value: null, child: Text('Tất cả các con 👨‍👩‍👧‍👦')),
+                              value: null, child: Text('Tất cả các con')),
                           ...children.map((c) => DropdownMenuItem(
                               value: c.id, child: Text(c.name))),
                         ],
