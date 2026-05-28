@@ -4,6 +4,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/providers/providers.dart';
 import '../auth/login_screen.dart';
 import '../../shared/widgets/widgets.dart';
+import '../shared/food_preference_screen.dart';
 
 class ChildSettingsScreen extends StatelessWidget {
   const ChildSettingsScreen({super.key});
@@ -81,6 +82,18 @@ class ChildSettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
+            FamiButton(
+              text: 'Sở thích ăn uống',
+              icon: Icons.restaurant_menu_rounded,
+              color: AppColors.secondary,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const FoodPreferenceScreen()),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
             FamiButton(
               text: 'Đăng xuất',
               icon: Icons.logout_rounded,

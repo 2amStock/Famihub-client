@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/providers/providers.dart';
 import '../../shared/widgets/widgets.dart';
 import 'my_tasks_screen.dart';
+import '../shared/notification_screen.dart';
 import 'child_rewards_screen.dart';
 import '../../core/utils/ui_helpers.dart';
 import '../shared/family_calendar_screen.dart';
@@ -48,6 +49,7 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
                 family.loadFamily(),
                 tasks.loadTasks(),
                 auth.refreshUser(),
+                context.read<NotificationProvider>().loadNotifications(),
               ]);
             },
             child: CustomScrollView(
@@ -98,25 +100,47 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
                                 );
                               },
                             ),
-                            Stack(
-                              children: [
-                                const Icon(Icons.notifications_none_rounded,
-                                    size: 28, color: AppColors.textPrimary),
-                                Positioned(
-                                  right: 2,
-                                  top: 2,
-                                  child: Container(
-                                    width: 10,
-                                    height: 10,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primary,
-                                      shape: BoxShape.circle,
-                                      border:
-                                          Border.all(color: Colors.white, width: 2),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const NotificationScreen()),
+                                );
+                              },
+                              child: Stack(
+                                children: [
+                                  const Icon(Icons.notifications_none_rounded,
+                                      size: 28, color: AppColors.textPrimary),
+                                  if (context.watch<NotificationProvider>().unreadCount > 0)
+                                    Positioned(
+                                      right: 2,
+                                      top: 2,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: Colors.white, width: 1.5),
+                                        ),
+                                        constraints: const BoxConstraints(
+                                          minWidth: 12,
+                                          minHeight: 12,
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            '${context.watch<NotificationProvider>().unreadCount}',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 8,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -401,9 +425,9 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
                       padding: EdgeInsets.all(40),
                       child: Column(
                         children: [
-                          Text('🎉', style: TextStyle(fontSize: 48)),
+                          Icon(Icons.celebration_rounded, size: 48, color: Colors.orange),
                           SizedBox(height: 12),
-                          Text('Không có nhiệm vụ nào! Bạn rảnh rồi 😊',
+                          Text('Không có nhiệm vụ nào! Bạn rảnh rồi',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: AppColors.textHint)),
                         ],
@@ -516,7 +540,7 @@ class _JoinFamilyCardState extends State<_JoinFamilyCard> {
                     context,
                     ok ? 'Thành công' : 'Lỗi',
                     ok
-                        ? 'Tham gia gia đình thành công! 🎉'
+                        ? 'Tham gia gia đình thành công!'
                         : 'Mã mời không hợp lệ',
                     isError: !ok,
                   );

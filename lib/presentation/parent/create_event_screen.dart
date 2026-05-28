@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../data/providers/providers.dart';
+import '../../../core/utils/ui_helpers.dart';
 
 class CreateEventScreen extends StatefulWidget {
   const CreateEventScreen({super.key});
@@ -75,9 +76,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     );
 
     if (end.isBefore(start)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Thời gian kết thúc phải sau thời gian bắt đầu.')),
-      );
+      UIHelpers.showMessageBox(context, 'Lỗi', 'Thời gian kết thúc phải sau thời gian bắt đầu.', isError: true);
       setState(() => _isLoading = false);
       return;
     }
@@ -95,9 +94,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     if (success != null && mounted) {
       Navigator.pop(context);
     } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Không thể tạo sự kiện.')),
-      );
+      UIHelpers.showMessageBox(context, 'Lỗi', 'Không thể tạo sự kiện.', isError: true);
     }
   }
 

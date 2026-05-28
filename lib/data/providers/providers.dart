@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../models/models.dart';
 import '../services/api_service.dart';
+export 'notification_provider.dart';
 
 class AuthProvider extends ChangeNotifier {
   final ApiService _api;
@@ -47,7 +48,8 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> register(String name, String email, String password, String role) async {
+  Future<bool> register(
+      String name, String email, String password, String role) async {
     _setLoading(true);
     try {
       final data = await _api.register(name, email, password, role);
@@ -116,7 +118,8 @@ class AuthProvider extends ChangeNotifier {
     if (e.toString().contains('401')) return 'Email hoặc mật khẩu không đúng';
     if (e.toString().contains('403')) return 'Không có quyền truy cập';
     if (e.toString().contains('409')) return 'Email đã được sử dụng';
-    if (e.toString().contains('SocketException')) return 'Không thể kết nối tới máy chủ';
+    if (e.toString().contains('SocketException'))
+      return 'Không thể kết nối tới máy chủ';
     return 'Có lỗi xảy ra, vui lòng thử lại';
   }
 }
@@ -134,8 +137,9 @@ class TaskProvider extends ChangeNotifier {
   bool get loading => _loading;
   String? get error => _error;
 
-  List<FamilyTask> get pendingTasks =>
-      _tasks.where((t) => t.isPending || t.isInProgress || t.isRejected).toList();
+  List<FamilyTask> get pendingTasks => _tasks
+      .where((t) => t.isPending || t.isInProgress || t.isRejected)
+      .toList();
   List<FamilyTask> get submittedTasks =>
       _tasks.where((t) => t.isSubmitted).toList();
   List<FamilyTask> get completedTasks =>
@@ -172,7 +176,9 @@ class TaskProvider extends ChangeNotifier {
       notifyListeners();
       return task;
     } catch (e) {
-      if (e is DioException && e.response?.statusCode == 403 && e.response?.data != null) {
+      if (e is DioException &&
+          e.response?.statusCode == 403 &&
+          e.response?.data != null) {
         if (e.response?.data.toString().contains('LIMIT_EXCEEDED') == true) {
           throw Exception('LIMIT_EXCEEDED');
         }
@@ -181,7 +187,8 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> submitTask(int taskId, String? note, Uint8List bytes, String fileName) async {
+  Future<bool> submitTask(
+      int taskId, String? note, Uint8List bytes, String fileName) async {
     try {
       // 1. Upload to Cloud first (using bytes for Web support)
       final photoUrl = await _api.uploadFile(bytes, fileName);
@@ -199,9 +206,11 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> approveTask(int taskId, bool approved, {String? rejectionNote}) async {
+  Future<bool> approveTask(int taskId, bool approved,
+      {String? rejectionNote}) async {
     try {
-      final updated = await _api.approveTask(taskId, approved, rejectionNote: rejectionNote);
+      final updated = await _api.approveTask(taskId, approved,
+          rejectionNote: rejectionNote);
       final idx = _tasks.indexWhere((t) => t.id == taskId);
       if (idx != -1) _tasks[idx] = updated;
       notifyListeners();
@@ -268,7 +277,9 @@ class FamilyProvider extends ChangeNotifier {
       await loadFamily();
       return true;
     } catch (e) {
-      if (e is DioException && e.response?.statusCode == 403 && e.response?.data != null) {
+      if (e is DioException &&
+          e.response?.statusCode == 403 &&
+          e.response?.data != null) {
         if (e.response?.data.toString().contains('LIMIT_EXCEEDED') == true) {
           throw Exception('LIMIT_EXCEEDED');
         }
@@ -359,7 +370,9 @@ class RewardProvider extends ChangeNotifier {
       notifyListeners();
       return reward;
     } catch (e) {
-      if (e is DioException && e.response?.statusCode == 400 && e.response?.data != null) {
+      if (e is DioException &&
+          e.response?.statusCode == 400 &&
+          e.response?.data != null) {
         throw Exception(e.response?.data['message'] ?? 'Lỗi tạo phần thưởng');
       }
       throw Exception(e.toString());
@@ -384,8 +397,11 @@ class RewardProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      if (e is DioException && e.response?.statusCode == 400 && e.response?.data != null) {
-        throw Exception(e.response?.data['message'] ?? 'Lỗi cập nhật phần thưởng');
+      if (e is DioException &&
+          e.response?.statusCode == 400 &&
+          e.response?.data != null) {
+        throw Exception(
+            e.response?.data['message'] ?? 'Lỗi cập nhật phần thưởng');
       }
       throw Exception(e.toString());
     }
@@ -398,7 +414,9 @@ class RewardProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      if (e is DioException && e.response?.statusCode == 400 && e.response?.data != null) {
+      if (e is DioException &&
+          e.response?.statusCode == 400 &&
+          e.response?.data != null) {
         throw Exception(e.response?.data['message'] ?? 'Lỗi xóa phần thưởng');
       }
       throw Exception(e.toString());
@@ -416,9 +434,11 @@ class RewardProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> approveRedemption(int redemptionId, bool approved, {String? parentNote}) async {
+  Future<bool> approveRedemption(int redemptionId, bool approved,
+      {String? parentNote}) async {
     try {
-      final updated = await _api.approveRedemption(redemptionId, approved, parentNote: parentNote);
+      final updated = await _api.approveRedemption(redemptionId, approved,
+          parentNote: parentNote);
       final idx = _redemptions.indexWhere((r) => r.id == redemptionId);
       if (idx != -1) _redemptions[idx] = updated;
       notifyListeners();
@@ -488,6 +508,188 @@ class FamilyEventProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  void _setLoading(bool val) {
+    _loading = val;
+    notifyListeners();
+  }
+}
+
+class FoodPreferenceProvider extends ChangeNotifier {
+  final ApiService _api;
+
+  FoodPreferenceProvider(this._api);
+
+  FoodPreference? _preference;
+  bool _loading = false;
+  String? _error;
+
+  FoodPreference? get preference => _preference;
+  bool get loading => _loading;
+  String? get error => _error;
+
+  Future<void> loadPreference() async {
+    _setLoading(true);
+    try {
+      _preference = await _api.getFoodPreference();
+      _error = null;
+    } catch (e) {
+      _error = 'Không thể tải sở thích ăn uống';
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> updatePreference(FoodPreference newPref) async {
+    _setLoading(true);
+    try {
+      _preference = await _api.updateFoodPreference(newPref);
+      _error = null;
+      return true;
+    } catch (e) {
+      _error = 'Không thể cập nhật sở thích ăn uống';
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  void _setLoading(bool val) {
+    _loading = val;
+    notifyListeners();
+  }
+}
+
+class SubscriptionProvider extends ChangeNotifier {
+  final ApiService _api;
+
+  SubscriptionProvider(this._api);
+
+  List<SubscriptionPlan> _plans = [];
+  UserSubscription? _currentSubscription;
+  bool _loading = false;
+  String? _error;
+
+  List<SubscriptionPlan> get plans => _plans;
+  UserSubscription? get currentSubscription => _currentSubscription;
+  bool get loading => _loading;
+  String? get error => _error;
+
+  Future<void> loadSubscriptionData() async {
+    _setLoading(true);
+    try {
+      final futures = await Future.wait([
+        _api.getSubscriptionPlans(),
+        _api.getCurrentSubscription(),
+      ]);
+      _plans = futures[0] as List<SubscriptionPlan>;
+      _currentSubscription = futures[1] as UserSubscription;
+      _error = null;
+    } catch (e) {
+      _error = 'Không thể tải dữ liệu gói dịch vụ';
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<String?> getPaymentLink(int planId) async {
+    try {
+      return await _api.createPaymentLink(planId);
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+      notifyListeners();
+      return null;
+    }
+  }
+
+  void _setLoading(bool val) {
+    _loading = val;
+    notifyListeners();
+  }
+}
+
+class MealSuggestionProvider extends ChangeNotifier {
+  final ApiService _api;
+  MealSuggestionProvider(this._api);
+
+  bool _loading = false;
+  bool get loading => _loading;
+
+  String? _error;
+  String? get error => _error;
+
+  List<MealSuggestion> _history = [];
+  List<MealSuggestion> get history => _history;
+
+  Future<List<MealSuggestion>?> suggestMeals({
+    required String mealType,
+    required int servingSize,
+    required int numberOfDishes,
+    String? availableIngredients,
+    String? cuisinePreference,
+    String? additionalNotes,
+  }) async {
+    _setLoading(true);
+    _error = null;
+    try {
+      final request = {
+        'mealType': mealType,
+        'servingSize': servingSize,
+        'numberOfDishes': numberOfDishes,
+        'availableIngredients': availableIngredients ?? '',
+        'cuisinePreference': cuisinePreference ?? '',
+        'additionalNotes': additionalNotes ?? '',
+      };
+      final suggestions = await _api.suggestMeals(request);
+      
+      // Add to beginning of history
+      _history.insertAll(0, suggestions);
+      
+      return suggestions;
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+      return null;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> loadHistory() async {
+    _setLoading(true);
+    _error = null;
+    try {
+      _history = await _api.getMealHistory(1, 50);
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> toggleFavorite(int id) async {
+    try {
+      final updated = await _api.toggleFavoriteMeal(id);
+      final index = _history.indexWhere((m) => m.id == id);
+      if (index != -1) {
+        _history[index] = updated;
+        notifyListeners();
+      }
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteSuggestion(int id) async {
+    try {
+      await _api.deleteMealSuggestion(id);
+      _history.removeWhere((m) => m.id == id);
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+      notifyListeners();
     }
   }
 

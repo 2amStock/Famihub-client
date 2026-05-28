@@ -26,7 +26,8 @@ class ApiService {
         return handler.next(options);
       },
       onError: (error, handler) {
-        print('ERROR[${error.response?.statusCode}] => PATH: ${error.requestOptions.path}');
+        print(
+            'ERROR[${error.response?.statusCode}] => PATH: ${error.requestOptions.path}');
         print('Error Data: ${error.response?.data}');
         return handler.next(error);
       },
@@ -58,7 +59,8 @@ class ApiService {
       await _storage.write(key: 'token', value: res.data['token']);
       return res.data;
     } on DioException catch (e) {
-      if (e.response?.statusCode == 403 && e.response?.data['errorCode'] == 'UNVERIFIED_EMAIL') {
+      if (e.response?.statusCode == 403 &&
+          e.response?.data['errorCode'] == 'UNVERIFIED_EMAIL') {
         throw Exception('UNVERIFIED_EMAIL');
       }
       rethrow;
@@ -99,7 +101,8 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> joinFamily(String inviteCode) async {
-    final res = await _dio.post('/Families/join', data: {'inviteCode': inviteCode});
+    final res =
+        await _dio.post('/Families/join', data: {'inviteCode': inviteCode});
     return res.data;
   }
 
@@ -149,7 +152,8 @@ class ApiService {
     return res.data['url'] as String;
   }
 
-  Future<FamilyTask> submitTask(int taskId, String? note, String photoUrl) async {
+  Future<FamilyTask> submitTask(
+      int taskId, String? note, String photoUrl) async {
     final res = await _dio.post(
       '/Tasks/$taskId/submit',
       data: {
@@ -160,7 +164,8 @@ class ApiService {
     return FamilyTask.fromJson(res.data);
   }
 
-  Future<FamilyTask> approveTask(int taskId, bool approved, {String? rejectionNote}) async {
+  Future<FamilyTask> approveTask(int taskId, bool approved,
+      {String? rejectionNote}) async {
     final res = await _dio.post('/Tasks/$taskId/approve', data: {
       'approved': approved,
       'rejectionNote': rejectionNote,
@@ -179,7 +184,9 @@ class ApiService {
       });
       return res.data['checkoutUrl'];
     } on DioException catch (e) {
-      if (e.response != null && e.response?.data != null && e.response?.data['message'] != null) {
+      if (e.response != null &&
+          e.response?.data != null &&
+          e.response?.data['message'] != null) {
         throw Exception(e.response?.data['message']);
       }
       throw Exception('Lỗi kết nối PayOS');
@@ -199,7 +206,10 @@ class ApiService {
     return (res.data as List).map((r) => Reward.fromJson(r)).toList();
   }
 
-  Future<Reward> createReward({required String title, String? description, required int requiredPoints}) async {
+  Future<Reward> createReward(
+      {required String title,
+      String? description,
+      required int requiredPoints}) async {
     final res = await _dio.post('/Rewards', data: {
       'title': title,
       'description': description,
@@ -208,7 +218,8 @@ class ApiService {
     return Reward.fromJson(res.data);
   }
 
-  Future<Reward> updateReward(int id, {String? title, String? description, int? requiredPoints}) async {
+  Future<Reward> updateReward(int id,
+      {String? title, String? description, int? requiredPoints}) async {
     final Map<String, dynamic> body = {};
     if (title != null) body['title'] = title;
     if (description != null) body['description'] = description;
@@ -223,7 +234,9 @@ class ApiService {
 
   Future<List<RewardRedemption>> getRedemptions() async {
     final res = await _dio.get('/Rewards/redemptions');
-    return (res.data as List).map((rr) => RewardRedemption.fromJson(rr)).toList();
+    return (res.data as List)
+        .map((rr) => RewardRedemption.fromJson(rr))
+        .toList();
   }
 
   Future<RewardRedemption> redeemReward(int rewardId) async {
@@ -238,8 +251,10 @@ class ApiService {
     }
   }
 
-  Future<RewardRedemption> approveRedemption(int redemptionId, bool approved, {String? parentNote}) async {
-    final res = await _dio.post('/Rewards/redemptions/$redemptionId/approve', data: {
+  Future<RewardRedemption> approveRedemption(int redemptionId, bool approved,
+      {String? parentNote}) async {
+    final res =
+        await _dio.post('/Rewards/redemptions/$redemptionId/approve', data: {
       'approved': approved,
       'parentNote': parentNote,
     });
@@ -270,5 +285,98 @@ class ApiService {
 
   Future<void> deleteFamilyEvent(int id) async {
     await _dio.delete('/family-events/$id');
+  }
+
+  // ── Food Preferences ──────────────────────────────────────────────────────
+
+  // ── Food Preferences ──────────────────────────────────────────────────────
+
+  Future<FoodPreference> getFoodPreference() async {
+    final res = await _dio.get('/FoodPreferences');
+    return FoodPreference.fromJson(res.data);
+  }
+
+  Future<FoodPreference> updateFoodPreference(FoodPreference preference) async {
+    final res = await _dio.put('/FoodPreferences', data: preference.toJson());
+    return FoodPreference.fromJson(res.data);
+  }
+
+  // --- Meal Suggestions ---
+  Future<List<MealSuggestion>> suggestMeals(Map<String, dynamic> request) async {
+    try {
+      final res = await _dio.post('/meals/suggest', data: request);
+      final List data = res.data['dishes'];
+      return data.map((e) => MealSuggestion.fromJson(e)).toList();
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null && e.response?.data['message'] != null) {
+        throw Exception(e.response?.data['message']);
+      }
+      throw Exception('Lỗi khi gọi AI gợi ý món ăn');
+    } catch (e) {
+      throw Exception('Lỗi không xác định: $e');
+    }
+  }
+
+  Future<List<MealSuggestion>> getMealHistory(int page, int pageSize) async {
+    try {
+      final res = await _dio.get('/meals/history?page=$page&pageSize=$pageSize');
+      final List data = res.data;
+      return data.map((e) => MealSuggestion.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Lỗi tải lịch sử gợi ý món ăn');
+    }
+  }
+
+  Future<List<MealSuggestion>> getFavoriteMeals() async {
+    try {
+      final res = await _dio.get('/meals/favorites');
+      final List data = res.data;
+      return data.map((e) => MealSuggestion.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Lỗi tải danh sách món yêu thích');
+    }
+  }
+
+  Future<MealSuggestion> toggleFavoriteMeal(int id) async {
+    try {
+      final res = await _dio.put('/meals/$id/favorite');
+      return MealSuggestion.fromJson(res.data['dish']);
+    } catch (e) {
+      throw Exception('Lỗi cập nhật món yêu thích');
+    }
+  }
+
+  Future<void> deleteMealSuggestion(int id) async {
+    try {
+      await _dio.delete('/meals/$id');
+    } catch (e) {
+      throw Exception('Lỗi xóa món ăn');
+    }
+  } 
+
+  // ── Subscriptions ─────────────────────────────────────────────────────────
+
+  Future<List<SubscriptionPlan>> getSubscriptionPlans() async {
+    final res = await _dio.get('/Subscriptions/plans');
+    return (res.data as List).map((p) => SubscriptionPlan.fromJson(p)).toList();
+  }
+
+  Future<UserSubscription> getCurrentSubscription() async {
+    final res = await _dio.get('/Subscriptions/current');
+    return UserSubscription.fromJson(res.data);
+  }
+  // ── Notifications ──────────────────────────────────────────────────────────
+
+  Future<List<AppNotification>> getNotifications() async {
+    final res = await _dio.get('/Notifications');
+    return (res.data as List).map((e) => AppNotification.fromJson(e)).toList();
+  }
+
+  Future<void> markAsRead(int id) async {
+    await _dio.put('/Notifications/$id/read');
+  }
+
+  Future<void> markAllAsRead() async {
+    await _dio.put('/Notifications/read-all');
   }
 }

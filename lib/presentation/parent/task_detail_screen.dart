@@ -47,8 +47,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         context,
         approved ? 'Thành công' : 'Thông báo',
         approved
-            ? '✅ Đã duyệt nhiệm vụ! Con được cộng ${_task.points} điểm 🌟'
-            : '❌ Đã từ chối nhiệm vụ.',
+            ? 'Đã duyệt nhiệm vụ! Con được cộng ${_task.points} điểm'
+            : 'Đã từ chối nhiệm vụ.',
         isError: !approved,
       );
     }

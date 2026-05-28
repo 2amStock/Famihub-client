@@ -253,9 +253,9 @@ class _TaskList extends StatelessWidget {
 
       if (!context.mounted) return;
       if (success) {
-        UIHelpers.showMessageBox(context, 'Thành công', '✅ Đã nộp minh chứng thành công!');
+        UIHelpers.showMessageBox(context, 'Thành công', 'Đã nộp minh chứng thành công!');
       } else {
-        UIHelpers.showMessageBox(context, 'Lỗi', '❌ Có lỗi xảy ra khi nộp.', isError: true);
+        UIHelpers.showMessageBox(context, 'Lỗi', 'Có lỗi xảy ra khi nộp.', isError: true);
       }
     }
   }

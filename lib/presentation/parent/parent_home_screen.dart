@@ -9,8 +9,12 @@ import '../../shared/widgets/widgets.dart';
 import 'task_list_screen.dart';
 import 'create_task_screen.dart';
 import 'parent_rewards_screen.dart';
+import '../subscription/subscription_screen.dart';
+import '../shared/notification_screen.dart';
 import '../../core/utils/ui_helpers.dart';
 import '../shared/family_calendar_screen.dart';
+import '../shared/meal_suggestion_screen.dart';
+import '../shared/food_preference_screen.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   final Function(int)? onNavigate;
@@ -35,6 +39,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     final auth = context.watch<AuthProvider>();
     final family = context.watch<FamilyProvider>();
     final tasks = context.watch<TaskProvider>();
+    final rewards = context.watch<RewardProvider>();
 
     return Scaffold(
       body: Container(
@@ -44,10 +49,11 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
             color: AppColors.primary,
             onRefresh: () async {
               await Future.wait([
-                family.loadFamily(),
-                tasks.loadTasks(),
-                auth.refreshUser(),
-              ]);
+                  tasks.loadTasks(),
+                  rewards.loadAll(),
+                  auth.refreshUser(),
+                  context.read<NotificationProvider>().loadNotifications(),
+                ]);
             },
             child: CustomScrollView(
               slivers: [
@@ -97,25 +103,47 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                                 );
                               },
                             ),
-                            Stack(
-                              children: [
-                                const Icon(Icons.notifications_none_rounded,
-                                    size: 28, color: AppColors.textPrimary),
-                                Positioned(
-                                  right: 2,
-                                  top: 2,
-                                  child: Container(
-                                    width: 10,
-                                    height: 10,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primary,
-                                      shape: BoxShape.circle,
-                                      border:
-                                          Border.all(color: Colors.white, width: 2),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const NotificationScreen()),
+                                );
+                              },
+                              child: Stack(
+                                children: [
+                                  const Icon(Icons.notifications_none_rounded,
+                                      size: 28, color: AppColors.textPrimary),
+                                  if (context.watch<NotificationProvider>().unreadCount > 0)
+                                    Positioned(
+                                      right: 2,
+                                      top: 2,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: Colors.white, width: 1.5),
+                                        ),
+                                        constraints: const BoxConstraints(
+                                          minWidth: 12,
+                                          minHeight: 12,
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            '${context.watch<NotificationProvider>().unreadCount}',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 8,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -221,8 +249,9 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      runSpacing: 20,
                       children: [
                         _CategoryItem(
                           icon: Icons.add_task_rounded,
@@ -280,6 +309,18 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                                     ? _FamilySetupCard()
                                     : _FamilyInfoCard(family: familyProvider),
                               ),
+                            );
+                          },
+                        ),
+                        _CategoryItem(
+                          icon: Icons.restaurant_menu_rounded,
+                          label: 'Khẩu vị',
+                          color: Colors.orange,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const FoodPreferenceScreen()),
                             );
                           },
                         ),
@@ -453,7 +494,7 @@ class _FamilySetupCardState extends State<_FamilySetupCard> {
                       .createFamily(_nameCtrl.text.trim());
                   if (ok && context.mounted) {
                     UIHelpers.showMessageBox(
-                        context, 'Thành công', 'Tạo gia đình thành công! 🎉');
+                        context, 'Thành công', 'Tạo gia đình thành công!');
                   }
                 },
               ),
@@ -1004,7 +1045,7 @@ class _FeaturedTaskCard extends StatelessWidget {
                               if (ctx.mounted) Navigator.pop(ctx);
                               if (ok && context.mounted) {
                                 UIHelpers.showMessageBox(context, 'Tuyệt vời',
-                                    'Đã duyệt và tặng điểm ✅');
+                                    'Đã duyệt và tặng điểm');
                               }
                             },
                           ),
