@@ -81,24 +81,24 @@ class AppTheme {
 
     return baseTheme.copyWith(
       scaffoldBackgroundColor: AppColors.background,
-      textTheme: GoogleFonts.outfitTextTheme().copyWith(
-        displayLarge: GoogleFonts.outfit(
+      textTheme: GoogleFonts.nunitoTextTheme().copyWith(
+        displayLarge: GoogleFonts.nunito(
           fontSize: 34, fontWeight: FontWeight.bold, color: AppColors.textPrimary, letterSpacing: -0.5),
-        displayMedium: GoogleFonts.outfit(
+        displayMedium: GoogleFonts.nunito(
           fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.textPrimary, letterSpacing: -0.5),
-        headlineLarge: GoogleFonts.outfit(
+        headlineLarge: GoogleFonts.nunito(
           fontSize: 24, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
-        headlineMedium: GoogleFonts.outfit(
+        headlineMedium: GoogleFonts.nunito(
           fontSize: 20, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
-        titleLarge: GoogleFonts.outfit(
+        titleLarge: GoogleFonts.nunito(
           fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
-        titleMedium: GoogleFonts.outfit(
+        titleMedium: GoogleFonts.nunito(
           fontSize: 16, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
-        bodyLarge: GoogleFonts.outfit(
+        bodyLarge: GoogleFonts.nunito(
           fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.textPrimary),
-        bodyMedium: GoogleFonts.outfit(
+        bodyMedium: GoogleFonts.nunito(
           fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.textSecondary),
-        labelLarge: GoogleFonts.outfit(
+        labelLarge: GoogleFonts.nunito(
           fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -107,7 +107,7 @@ class AppTheme {
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 28),
-          textStyle: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w600),
+          textStyle: GoogleFonts.nunito(fontSize: 16, fontWeight: FontWeight.w600),
           elevation: 0,
         ),
       ),
@@ -134,8 +134,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(18),
           borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
-        labelStyle: GoogleFonts.outfit(color: AppColors.textSecondary),
-        hintStyle: GoogleFonts.outfit(color: AppColors.textHint),
+        labelStyle: GoogleFonts.nunito(color: AppColors.textSecondary),
+        hintStyle: GoogleFonts.nunito(color: AppColors.textHint),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       ),
       cardTheme: CardThemeData(
@@ -150,7 +150,7 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.outfit(
+        titleTextStyle: GoogleFonts.nunito(
           fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
@@ -158,7 +158,7 @@ class AppTheme {
         backgroundColor: const Color(0xFFF2F2F7),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         side: BorderSide.none,
-        labelStyle: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w500),
+        labelStyle: GoogleFonts.nunito(fontSize: 12, fontWeight: FontWeight.w500),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
