@@ -9,6 +9,7 @@ import '../shared/notification_screen.dart';
 import 'child_rewards_screen.dart';
 import '../../core/utils/ui_helpers.dart';
 import '../shared/family_calendar_screen.dart';
+import 'leaderboard_screen.dart';
 
 class ChildHomeScreen extends StatefulWidget {
   final Function(int)? onNavigate;
@@ -352,7 +353,7 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
                           label: 'Xếp hạng',
                           color: AppColors.approved,
                           onTap: () {
-                            UIHelpers.showMessageBox(context, 'Tính năng đang phát triển', 'Bảng xếp hạng sẽ sớm được ra mắt trong bản cập nhật tới!');
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const LeaderboardScreen()));
                           },
                         ),
                       ],

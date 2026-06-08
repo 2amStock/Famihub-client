@@ -25,6 +25,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => SubscriptionProvider(apiService)),
         ChangeNotifierProvider(create: (_) => MealSuggestionProvider(apiService)),
         ChangeNotifierProvider(create: (_) => NotificationProvider(apiService)),
+        ChangeNotifierProvider(create: (_) => LeaderboardProvider(apiService)),
       ],
       child: const FamiHubApp(),
     ),
