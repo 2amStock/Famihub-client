@@ -103,7 +103,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               FamiButton(
                 text: 'Đổi mật khẩu',
                 icon: Icons.save_rounded,
-                isLoading: auth.loading,
+                loading: auth.loading,
                 onPressed: () async {
                   if (_currentPasswordCtrl.text.isEmpty || _newPasswordCtrl.text.isEmpty || _confirmPasswordCtrl.text.isEmpty) {
                     UIHelpers.showSnackBar(context, 'Vui lòng điền đầy đủ thông tin');

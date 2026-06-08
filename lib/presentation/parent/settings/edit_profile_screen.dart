@@ -92,7 +92,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   FamiButton(
                     text: 'Lưu thay đổi',
                     icon: Icons.save_rounded,
-                    isLoading: auth.loading,
+                    loading: auth.loading,
                     onPressed: () async {
                       if (_nameCtrl.text.trim().isEmpty) {
                         UIHelpers.showSnackBar(context, 'Vui lòng nhập tên');
