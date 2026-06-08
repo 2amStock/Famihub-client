@@ -349,14 +349,11 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                 ),
 
                 const SizedBox(height: 24),
-                LoadingOverlay(
+                FamiButton(
+                  text: 'Giao nhiệm vụ',
+                  icon: Icons.send_rounded,
                   loading: _saving,
-                  child: FamiButton(
-                    text: 'Giao nhiệm vụ',
-                    icon: Icons.send_rounded,
-                    loading: _saving,
-                    onPressed: _save,
-                  ),
+                  onPressed: _save,
                 ),
               ],
             ),
