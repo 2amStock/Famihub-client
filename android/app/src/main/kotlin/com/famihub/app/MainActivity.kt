@@ -1,4 +1,4 @@
-package com.example.famihub_flutter
+package com.famihub.app
 
 import io.flutter.embedding.android.FlutterActivity
 

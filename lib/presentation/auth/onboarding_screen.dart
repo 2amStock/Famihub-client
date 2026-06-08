@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
+import '../../shared/widgets/widgets.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -10,8 +11,9 @@ class OnboardingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(
+    return ResponsiveWrapper(
+      child: Scaffold(
+        backgroundColor: const Color.fromARGB(
           255, 255, 255, 255), // Using the hex equivalent of RGB 248, 195, 211
       body: SafeArea(
         child: Column(
@@ -90,9 +92,9 @@ class OnboardingScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Spacer(flex: 1),
-            const SizedBox(height: 40),
-          ],
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );

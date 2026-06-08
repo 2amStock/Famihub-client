@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+export 'responsive_wrapper.dart';
 
 class FamiButton extends StatelessWidget {
   final String text;
