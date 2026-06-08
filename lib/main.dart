@@ -7,7 +7,9 @@ import 'presentation/auth/onboarding_screen.dart';
 import 'presentation/parent/parent_main_screen.dart';
 import 'presentation/child/child_main_screen.dart';
 
-void main() {
+import 'package:flutter/services.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   final apiService = ApiService();
@@ -41,6 +43,15 @@ class FamiHubApp extends StatelessWidget {
       title: 'FamiHub',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.theme,
+      builder: (context, child) {
+        // Ensure responsive UI across different screen sizes by clamping text scaling
+        final mediaQueryData = MediaQuery.of(context);
+        final scale = mediaQueryData.textScaler.clamp(minScaleFactor: 0.8, maxScaleFactor: 1.1);
+        return MediaQuery(
+          data: mediaQueryData.copyWith(textScaler: scale),
+          child: child!,
+        );
+      },
       home: const AuthWrapper(),
     );
   }
