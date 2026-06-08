@@ -6,6 +6,9 @@ import '../auth/login_screen.dart';
 import '../../shared/widgets/widgets.dart';
 import '../../core/utils/ui_helpers.dart';
 import '../subscription/subscription_screen.dart';
+import 'settings/edit_profile_screen.dart';
+import 'settings/change_password_screen.dart';
+import 'settings/static_settings_screens.dart';
 
 class ParentSettingsScreen extends StatelessWidget {
   const ParentSettingsScreen({super.key});
@@ -92,7 +95,7 @@ class ParentSettingsScreen extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.edit_rounded, color: AppColors.textHint),
                     onPressed: () {
-                      _showComingSoon(context);
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen()));
                     },
                   ),
                 ],
@@ -160,10 +163,10 @@ class ParentSettingsScreen extends StatelessWidget {
             ),
             
             _buildSettingsGroup([
-              _buildSettingsItem(context, icon: Icons.notifications_active_rounded, color: Colors.orange, title: 'Thông báo', onTap: () => _showComingSoon(context)),
-              _buildSettingsItem(context, icon: Icons.lock_rounded, color: Colors.blue, title: 'Bảo mật & Mật khẩu', onTap: () => _showComingSoon(context)),
-              _buildSettingsItem(context, icon: Icons.language_rounded, color: Colors.teal, title: 'Ngôn ngữ', trailing: const Text('Tiếng Việt', style: TextStyle(color: AppColors.textSecondary)), onTap: () => _showComingSoon(context)),
-              _buildSettingsItem(context, icon: Icons.dark_mode_rounded, color: Colors.indigo, title: 'Giao diện', trailing: const Text('Sáng', style: TextStyle(color: AppColors.textSecondary)), onTap: () => _showComingSoon(context), showDivider: false),
+              _buildSettingsItem(context, icon: Icons.notifications_active_rounded, color: Colors.orange, title: 'Thông báo', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationSettingsScreen()))),
+              _buildSettingsItem(context, icon: Icons.lock_rounded, color: Colors.blue, title: 'Bảo mật & Mật khẩu', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangePasswordScreen()))),
+              _buildSettingsItem(context, icon: Icons.language_rounded, color: Colors.teal, title: 'Ngôn ngữ', trailing: const Text('Tiếng Việt', style: TextStyle(color: AppColors.textSecondary)), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LanguageSettingsScreen()))),
+              _buildSettingsItem(context, icon: Icons.dark_mode_rounded, color: Colors.indigo, title: 'Giao diện', trailing: const Text('Sáng', style: TextStyle(color: AppColors.textSecondary)), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ThemeSettingsScreen())), showDivider: false),
             ]),
 
             const SizedBox(height: 24),
@@ -173,9 +176,9 @@ class ParentSettingsScreen extends StatelessWidget {
             ),
             
             _buildSettingsGroup([
-              _buildSettingsItem(context, icon: Icons.help_rounded, color: Colors.green, title: 'Trung tâm trợ giúp', onTap: () => _showComingSoon(context)),
-              _buildSettingsItem(context, icon: Icons.star_rounded, color: Colors.amber, title: 'Đánh giá ứng dụng', onTap: () => _showComingSoon(context)),
-              _buildSettingsItem(context, icon: Icons.privacy_tip_rounded, color: Colors.grey, title: 'Chính sách bảo mật', onTap: () => _showComingSoon(context), showDivider: false),
+              _buildSettingsItem(context, icon: Icons.help_rounded, color: Colors.green, title: 'Trung tâm trợ giúp', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpCenterScreen()))),
+              _buildSettingsItem(context, icon: Icons.star_rounded, color: Colors.amber, title: 'Đánh giá ứng dụng', onTap: () => _showAppReviewDialog(context)),
+              _buildSettingsItem(context, icon: Icons.privacy_tip_rounded, color: Colors.grey, title: 'Chính sách bảo mật', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())), showDivider: false),
             ]),
 
             const SizedBox(height: 32),
@@ -263,11 +266,27 @@ class ParentSettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showComingSoon(BuildContext context) {
-    UIHelpers.showMessageBox(
-      context,
-      'Thông báo',
-      'Tính năng đang được phát triển!',
+  void _showAppReviewDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Đánh giá ứng dụng'),
+        content: const Text('Bạn có thích FamiHub không? Vui lòng đánh giá 5 sao trên cửa hàng ứng dụng để ủng hộ chúng tôi nhé!'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Để sau', style: TextStyle(color: AppColors.textHint)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              UIHelpers.showSnackBar(context, 'Cảm ơn bạn đã đánh giá!');
+            },
+            child: const Text('Đánh giá ngay', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+          ),
+        ],
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
     );
   }
 }

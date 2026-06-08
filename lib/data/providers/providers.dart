@@ -80,6 +80,38 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> updateProfile(String? name, String? avatar) async {
+    _setLoading(true);
+    try {
+      final updatedUser = await _api.updateProfile(name, avatar);
+      _user = updatedUser;
+      _error = null;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+      notifyListeners();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> changePassword(String currentPassword, String newPassword) async {
+    _setLoading(true);
+    try {
+      await _api.changePassword(currentPassword, newPassword);
+      _error = null;
+      return true;
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+      notifyListeners();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   Future<bool> verifyOtp(String email, String otpCode) async {
     _setLoading(true);
     try {
@@ -690,6 +722,37 @@ class MealSuggestionProvider extends ChangeNotifier {
     } catch (e) {
       _error = e.toString().replaceAll('Exception: ', '');
       notifyListeners();
+    }
+  }
+
+  void _setLoading(bool val) {
+    _loading = val;
+    notifyListeners();
+  }
+}
+
+class LeaderboardProvider extends ChangeNotifier {
+  final ApiService _api;
+
+  LeaderboardProvider(this._api);
+
+  List<AppUser> _topChildren = [];
+  bool _loading = false;
+  String? _error;
+
+  List<AppUser> get topChildren => _topChildren;
+  bool get loading => _loading;
+  String? get error => _error;
+
+  Future<void> loadLeaderboard() async {
+    _setLoading(true);
+    try {
+      _topChildren = await _api.getLeaderboard();
+      _error = null;
+    } catch (e) {
+      _error = 'Không thể tải bảng xếp hạng';
+    } finally {
+      _setLoading(false);
     }
   }
 

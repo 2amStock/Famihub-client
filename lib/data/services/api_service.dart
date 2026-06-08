@@ -93,6 +93,33 @@ class ApiService {
     return AppUser.fromJson(res.data);
   }
 
+  Future<List<AppUser>> getLeaderboard() async {
+    final res = await _dio.get('/User/leaderboard');
+    return (res.data as List).map((u) => AppUser.fromJson(u)).toList();
+  }
+
+  Future<AppUser> updateProfile(String? name, String? avatar) async {
+    final res = await _dio.put('/User/profile', data: {
+      'name': name,
+      'avatar': avatar,
+    });
+    return AppUser.fromJson(res.data);
+  }
+
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    try {
+      await _dio.put('/User/change-password', data: {
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+      });
+    } on DioException catch (e) {
+      if (e.response?.data != null && e.response?.data['message'] != null) {
+        throw Exception(e.response?.data['message']);
+      }
+      rethrow;
+    }
+  }
+
   // ── Families ─────────────────────────────────────────────────────────────
 
   Future<Family> createFamily(String name) async {
