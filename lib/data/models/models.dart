@@ -433,3 +433,21 @@ class MealSuggestion {
         requestedByName: json['requestedByName'],
       );
 }
+
+class MealSuggestionGroup {
+  final String date;
+  final String mealType;
+  final List<MealSuggestion> dishes;
+
+  MealSuggestionGroup({
+    required this.date,
+    required this.mealType,
+    required this.dishes,
+  });
+
+  factory MealSuggestionGroup.fromJson(Map<String, dynamic> json) => MealSuggestionGroup(
+        date: json['date'] ?? '',
+        mealType: json['mealType'] ?? '',
+        dishes: (json['dishes'] as List?)?.map((i) => MealSuggestion.fromJson(i)).toList() ?? [],
+      );
+}
