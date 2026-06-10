@@ -652,8 +652,8 @@ class MealSuggestionProvider extends ChangeNotifier {
   String? _error;
   String? get error => _error;
 
-  List<MealSuggestion> _history = [];
-  List<MealSuggestion> get history => _history;
+  List<MealSuggestionGroup> _history = [];
+  List<MealSuggestionGroup> get history => _history;
 
   Future<List<MealSuggestion>?> suggestMeals({
     required String mealType,
@@ -676,8 +676,8 @@ class MealSuggestionProvider extends ChangeNotifier {
       };
       final suggestions = await _api.suggestMeals(request);
       
-      // Add to beginning of history
-      _history.insertAll(0, suggestions);
+      // Reload history to get updated groups from server
+      await loadHistory();
       
       return suggestions;
     } catch (e) {
@@ -703,10 +703,13 @@ class MealSuggestionProvider extends ChangeNotifier {
   Future<void> toggleFavorite(int id) async {
     try {
       final updated = await _api.toggleFavoriteMeal(id);
-      final index = _history.indexWhere((m) => m.id == id);
-      if (index != -1) {
-        _history[index] = updated;
-        notifyListeners();
+      for (var group in _history) {
+        final index = group.dishes.indexWhere((m) => m.id == id);
+        if (index != -1) {
+          group.dishes[index] = updated;
+          notifyListeners();
+          break;
+        }
       }
     } catch (e) {
       _error = e.toString().replaceAll('Exception: ', '');
@@ -717,7 +720,10 @@ class MealSuggestionProvider extends ChangeNotifier {
   Future<void> deleteSuggestion(int id) async {
     try {
       await _api.deleteMealSuggestion(id);
-      _history.removeWhere((m) => m.id == id);
+      for (var group in _history) {
+        group.dishes.removeWhere((m) => m.id == id);
+      }
+      _history.removeWhere((g) => g.dishes.isEmpty);
       notifyListeners();
     } catch (e) {
       _error = e.toString().replaceAll('Exception: ', '');

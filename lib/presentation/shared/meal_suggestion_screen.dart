@@ -5,6 +5,7 @@ import '../../data/models/models.dart';
 import '../../data/providers/providers.dart';
 import '../../shared/widgets/widgets.dart';
 import '../subscription/subscription_screen.dart';
+import 'meal_session_detail_screen.dart';
 
 class MealSuggestionScreen extends StatefulWidget {
   const MealSuggestionScreen({super.key});
@@ -211,7 +212,16 @@ class _MealSuggestionScreenState extends State<MealSuggestionScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<MealSuggestionProvider>();
     final history = provider.history;
-    final displayList = _showFavorites ? history.where((e) => e.isFavorite).toList() : history;
+    final displayList = _showFavorites 
+        ? history
+            .map((g) => MealSuggestionGroup(
+                  date: g.date,
+                  mealType: g.mealType,
+                  dishes: g.dishes.where((d) => d.isFavorite).toList(),
+                ))
+            .where((g) => g.dishes.isNotEmpty)
+            .toList()
+        : history;
 
     return Scaffold(
       appBar: AppBar(
@@ -246,8 +256,8 @@ class _MealSuggestionScreenState extends State<MealSuggestionScreen> {
                     padding: const EdgeInsets.all(20),
                     itemCount: displayList.length,
                     itemBuilder: (context, index) {
-                      final meal = displayList[index];
-                      return _MealCard(meal: meal);
+                      final group = displayList[index];
+                      return _SessionCard(session: group);
                     },
                   ),
       ),
@@ -262,92 +272,103 @@ class _MealSuggestionScreenState extends State<MealSuggestionScreen> {
   }
 }
 
-class _MealCard extends StatelessWidget {
-  final MealSuggestion meal;
-  const _MealCard({required this.meal});
+class _SessionCard extends StatelessWidget {
+  final MealSuggestionGroup session;
+  const _SessionCard({required this.session});
 
   @override
   Widget build(BuildContext context) {
+    IconData mealIcon = Icons.restaurant;
+    String mealName = session.mealType;
+    if (mealName.toLowerCase().contains('breakfast')) {
+      mealIcon = Icons.free_breakfast_rounded;
+      mealName = 'Bữa sáng';
+    } else if (mealName.toLowerCase().contains('lunch')) {
+      mealIcon = Icons.lunch_dining_rounded;
+      mealName = 'Bữa trưa';
+    } else if (mealName.toLowerCase().contains('dinner')) {
+      mealIcon = Icons.dinner_dining_rounded;
+      mealName = 'Bữa tối';
+    } else if (mealName.toLowerCase().contains('snack')) {
+      mealIcon = Icons.tapas_rounded;
+      mealName = 'Ăn vặt';
+    }
+
+    DateTime? dt = DateTime.tryParse(session.date)?.toLocal();
+    String formattedDate = dt != null 
+        ? 'Lúc ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')} • ${dt.day}/${dt.month}/${dt.year}'
+        : session.date;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(meal.dishName,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.textPrimary)),
-                ),
-                IconButton(
-                  icon: Icon(meal.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                      color: meal.isFavorite ? AppColors.secondary : AppColors.textHint),
-                  onPressed: () {
-                    context.read<MealSuggestionProvider>().toggleFavorite(meal.id);
-                  },
-                ),
-              ],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => MealSessionDetailScreen(session: session),
             ),
-            if (meal.description != null) ...[
-              const SizedBox(height: 4),
-              Text(meal.description!, style: const TextStyle(color: AppColors.textSecondary)),
-            ],
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _buildChip(Icons.timer_outlined, '${meal.estimatedTime} phút'),
-                if (meal.difficultyLevel != null) _buildChip(Icons.speed_rounded, meal.difficultyLevel!),
-                if (meal.cuisineType != null) _buildChip(Icons.public_rounded, meal.cuisineType!),
-              ],
-            ),
-            const Divider(height: 24),
-            const Text('Nguyên liệu:', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            ...meal.ingredients.map((i) => Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(mealIcon, color: AppColors.primary, size: 24),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Gợi ý $mealName', 
+                            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: AppColors.textPrimary)),
+                        const SizedBox(height: 4),
+                        Text(formattedDate, 
+                            style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded, color: AppColors.textHint),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text('Danh sách món:', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+              const SizedBox(height: 8),
+              ...session.dishes.asMap().entries.map((entry) {
+                int index = entry.key + 1;
+                MealSuggestion dish = entry.value;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
                   child: Row(
                     children: [
-                      const Icon(Icons.circle, size: 6, color: AppColors.primary),
+                      Text('$index.', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text('${i.name} - ${i.amount} ${i.unit}', style: const TextStyle(fontSize: 14)),
+                        child: Text(dish.dishName, 
+                            style: const TextStyle(color: AppColors.textSecondary, fontSize: 15)),
                       ),
+                      if (dish.isFavorite)
+                        const Icon(Icons.favorite_rounded, size: 16, color: AppColors.secondary),
                     ],
                   ),
-                )),
-            const SizedBox(height: 12),
-            const Text('Hướng dẫn:', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            ...meal.instructions.map((i) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(i, style: const TextStyle(fontSize: 14)),
-                )),
-          ],
+                );
+              }),
+            ],
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildChip(IconData icon, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF2F2F7),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: AppColors.textSecondary),
-          const SizedBox(width: 4),
-          Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
-        ],
       ),
     );
   }

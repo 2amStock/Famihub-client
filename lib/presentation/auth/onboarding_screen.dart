@@ -21,12 +21,15 @@ class OnboardingScreen extends StatelessWidget {
             const Spacer(flex: 1),
 
             // The newly generated image containing the logo, title, slogan, and character
-            Hero(
-              tag: 'logo',
-              child: Image.asset(
-                'assets/images/updategiaodien3.png',
-                width: size.width * 0.85,
-                fit: BoxFit.contain,
+            Expanded(
+              flex: 6,
+              child: Hero(
+                tag: 'logo',
+                child: Image.asset(
+                  'assets/images/updategiaodien3.png',
+                  width: size.width * 0.85,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
 

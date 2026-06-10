@@ -344,13 +344,27 @@ class ApiService {
     }
   }
 
-  Future<List<MealSuggestion>> getMealHistory(int page, int pageSize) async {
+  Future<List<MealSuggestionGroup>> getMealHistory(int page, int pageSize) async {
     try {
       final res = await _dio.get('/meals/history?page=$page&pageSize=$pageSize');
       final List data = res.data;
-      return data.map((e) => MealSuggestion.fromJson(e)).toList();
+      
+      final flatList = data.map((e) => MealSuggestion.fromJson(e)).toList();
+      final Map<String, MealSuggestionGroup> groups = {};
+      
+      for (var dish in flatList) {
+        String dateKey = '${dish.createdAt.year}-${dish.createdAt.month.toString().padLeft(2, '0')}-${dish.createdAt.day.toString().padLeft(2, '0')} ${dish.createdAt.hour.toString().padLeft(2, '0')}:${dish.createdAt.minute.toString().padLeft(2, '0')}';
+        String fullKey = '${dateKey}_${dish.mealType}';
+        
+        if (!groups.containsKey(fullKey)) {
+          groups[fullKey] = MealSuggestionGroup(date: dateKey, mealType: dish.mealType, dishes: []);
+        }
+        groups[fullKey]!.dishes.add(dish);
+      }
+      
+      return groups.values.toList();
     } catch (e) {
-      throw Exception('Lỗi tải lịch sử gợi ý món ăn');
+      throw Exception('Lỗi tải lịch sử gợi ý món ăn: $e');
     }
   }
 
