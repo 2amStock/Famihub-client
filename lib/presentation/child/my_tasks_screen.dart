@@ -240,7 +240,7 @@ class _TaskList extends StatelessWidget {
 
   Future<void> _submitProof(BuildContext context, int taskId) async {
     final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.camera, imageQuality: 70);
+    final image = await picker.pickImage(source: ImageSource.camera, imageQuality: 100);
 
     if (image != null) {
       if (!context.mounted) return;
