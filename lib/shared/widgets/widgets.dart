@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 export 'responsive_wrapper.dart';
@@ -266,10 +267,18 @@ class LoadingOverlay extends StatelessWidget {
     return Stack(children: [
       child,
       if (loading)
-        Container(
-          color: Colors.black26,
-          child: const Center(
-            child: CircularProgressIndicator(color: AppColors.primary),
+        Positioned.fill(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+              child: Container(
+                color: Colors.white.withOpacity(0.5),
+                child: const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
+                ),
+              ),
+            ),
           ),
         ),
     ]);
