@@ -142,7 +142,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 ),
               ),
             ),
-          Text(plan.name,
+          Text(plan.name == 'FREE' ? 'MIỄN PHÍ' : 
+               plan.name == 'STARTER' ? 'TIÊU CHUẨN' :
+               plan.name == 'FAMILY' ? 'GIA ĐÌNH' :
+               plan.name == 'YEARLY' ? 'HÀNG NĂM' : plan.name,
               style:
                   const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
@@ -179,7 +182,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
-            child: Text(isCurrent ? 'Đang sử dụng' : 'Chọn gói ${plan.name}'),
+            child: Text(isCurrent ? 'Đang sử dụng' : 'Chọn gói ${plan.name == 'FREE' ? 'MIỄN PHÍ' : plan.name == 'STARTER' ? 'TIÊU CHUẨN' : plan.name == 'FAMILY' ? 'GIA ĐÌNH' : plan.name == 'YEARLY' ? 'HÀNG NĂM' : plan.name}'),
           )
         ],
       ),

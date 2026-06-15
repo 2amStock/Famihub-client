@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:famihub_flutter/core/theme/app_theme.dart';
 
 class UIHelpers {
-  static void showMessageBox(BuildContext context, String title, String message, {bool isError = false}) {
+  static void showMessageBox(BuildContext context, String title, String message,
+      {bool isError = false}) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -24,7 +25,8 @@ class UIHelpers {
     );
   }
 
-  static void showSnackBar(BuildContext context, String message, {bool isError = false}) {
+  static void showSnackBar(BuildContext context, String message,
+      {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
