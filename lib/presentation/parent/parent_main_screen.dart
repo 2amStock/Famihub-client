@@ -68,7 +68,7 @@ class _ParentMainScreenState extends State<ParentMainScreen> {
                 BottomNavigationBarItem(
                   icon: Icon(Icons.assignment_outlined),
                   activeIcon: Icon(Icons.assignment_rounded),
-                  label: 'Task',
+                  label: 'Nhiệm vụ',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.auto_awesome_outlined),

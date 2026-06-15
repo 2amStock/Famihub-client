@@ -67,7 +67,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Con sẽ thấy lý do này để sửa bài nộp đấy.', 
+              const Text('Con sẽ thấy lý do này để chụp ảnh lại đấy.', 
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
               const SizedBox(height: 20),
               FamiTextField(
@@ -226,7 +226,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             child: const Icon(Icons.photo_library_rounded, color: AppColors.primary, size: 18),
                           ),
                           const SizedBox(width: 12),
-                          Text('BẰNG CHỨNG CỦA CON',
+                          Text('ẢNH CHỤP CỦA CON',
                               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                 color: AppColors.textSecondary, fontWeight: FontWeight.w900, letterSpacing: 1)),
                         ],

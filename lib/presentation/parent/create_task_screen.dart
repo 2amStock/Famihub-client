@@ -284,7 +284,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                               Expanded(
                                 child: Text(
                                   _dueDate == null
-                                      ? 'Hạn nộp bài'
+                                      ? 'Hạn hoàn thành'
                                       : DateFormat('HH:mm - dd/MM/yyyy').format(_dueDate!),
                                   style: TextStyle(
                                       color: _dueDate == null

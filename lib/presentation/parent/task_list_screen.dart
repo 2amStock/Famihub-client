@@ -167,7 +167,7 @@ class _TaskTabView extends StatelessWidget {
                           Icon(Icons.photo_camera_rounded,
                               size: 14, color: AppColors.submitted),
                           SizedBox(width: 6),
-                          Text('Đã nộp ảnh bằng chứng – chờ phụ huynh duyệt',
+                          Text('Đã gửi ảnh hoàn thành – chờ phụ huynh duyệt',
                               style: TextStyle(
                                   fontSize: 12, color: AppColors.submitted,
                                   fontWeight: FontWeight.w600)),

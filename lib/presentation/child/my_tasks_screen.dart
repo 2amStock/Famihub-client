@@ -205,7 +205,7 @@ class _TaskList extends StatelessWidget {
                     const Spacer(),
                     if (canSubmit)
                       FamiButton(
-                        text: task.isRejected ? 'Nộp lại' : 'Nộp bài',
+                        text: task.isRejected ? 'Chụp lại' : 'Chụp ảnh',
                         icon: Icons.camera_alt_rounded,
                         width: 160,
                         height: 44,
@@ -246,16 +246,16 @@ class _TaskList extends StatelessWidget {
       if (!context.mounted) return;
       
       // Hiển thị loading
-      UIHelpers.showMessageBox(context, 'Thông báo', 'Đang nộp minh chứng...');
+      UIHelpers.showMessageBox(context, 'Thông báo', 'Đang gửi ảnh...');
 
       final bytes = await image.readAsBytes();
       final success = await context.read<TaskProvider>().submitTask(taskId, null, bytes, image.name);
 
       if (!context.mounted) return;
       if (success) {
-        UIHelpers.showMessageBox(context, 'Thành công', 'Đã nộp minh chứng thành công!');
+        UIHelpers.showMessageBox(context, 'Thành công', 'Đã gửi ảnh thành công!');
       } else {
-        UIHelpers.showMessageBox(context, 'Lỗi', 'Có lỗi xảy ra khi nộp.', isError: true);
+        UIHelpers.showMessageBox(context, 'Lỗi', 'Có lỗi xảy ra khi gửi ảnh.', isError: true);
       }
     }
   }
