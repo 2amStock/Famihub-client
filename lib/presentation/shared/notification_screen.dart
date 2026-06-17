@@ -14,6 +14,8 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
+  bool _showUnreadOnly = false;
+
   @override
   void initState() {
     super.initState();
@@ -25,7 +27,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<NotificationProvider>();
-    final notifications = provider.notifications;
+    final notifications = _showUnreadOnly 
+        ? provider.notifications.where((n) => !n.isRead).toList()
+        : provider.notifications;
 
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +37,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
-          if (notifications.isNotEmpty && provider.unreadCount > 0)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: DropdownButton<bool>(
+              value: _showUnreadOnly,
+              underline: const SizedBox(),
+              icon: const Icon(Icons.filter_list_rounded, color: AppColors.primary),
+              items: const [
+                DropdownMenuItem(value: false, child: Text('Tất cả', style: TextStyle(fontSize: 14))),
+                DropdownMenuItem(value: true, child: Text('Chưa đọc', style: TextStyle(fontSize: 14))),
+              ],
+              onChanged: (val) {
+                if (val != null) setState(() => _showUnreadOnly = val);
+              },
+            ),
+          ),
+          if (provider.notifications.isNotEmpty && provider.unreadCount > 0)
             IconButton(
               icon: const Icon(Icons.done_all_rounded, color: AppColors.primary),
               tooltip: 'Đánh dấu tất cả đã đọc',

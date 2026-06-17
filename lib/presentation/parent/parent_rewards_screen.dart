@@ -15,6 +15,7 @@ class ParentRewardsScreen extends StatefulWidget {
 
 class _ParentRewardsScreenState extends State<ParentRewardsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  int? _selectedChildId;
 
   @override
   void initState() {
@@ -192,6 +193,32 @@ class _ParentRewardsScreenState extends State<ParentRewardsScreen> with SingleTi
         title: const Text('Phần Thưởng', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
         centerTitle: true,
         elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Consumer<FamilyProvider>(
+              builder: (context, family, child) {
+                if (family.children.isEmpty) return const SizedBox.shrink();
+                return DropdownButton<int?>(
+                  value: _selectedChildId,
+                  hint: const Text('Tất cả bé', style: TextStyle(color: AppColors.primary, fontSize: 14)),
+                  underline: const SizedBox(),
+                  icon: const Icon(Icons.filter_list_rounded, color: AppColors.primary),
+                  items: [
+                    const DropdownMenuItem<int?>(value: null, child: Text('Tất cả bé')),
+                    ...family.children.map((c) => DropdownMenuItem<int?>(
+                          value: c.id,
+                          child: Text(c.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                        )),
+                  ],
+                  onChanged: (val) {
+                    setState(() => _selectedChildId = val);
+                  },
+                );
+              },
+            ),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppColors.primary,
@@ -290,16 +317,20 @@ class _ParentRewardsScreenState extends State<ParentRewardsScreen> with SingleTi
   }
 
   Widget _buildRedemptionsTab(RewardProvider provider) {
-    if (provider.redemptions.isEmpty) {
+    final filteredReqs = provider.redemptions
+        .where((req) => _selectedChildId == null || req.child?.id == _selectedChildId)
+        .toList();
+
+    if (filteredReqs.isEmpty) {
       return const Center(child: Text('Chưa có yêu cầu nào.'));
     }
     return RefreshIndicator(
       onRefresh: () => provider.loadRedemptions(),
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: provider.redemptions.length,
+        itemCount: filteredReqs.length,
         itemBuilder: (context, index) {
-          final req = provider.redemptions[index];
+          final req = filteredReqs[index];
           return Card(
             margin: const EdgeInsets.only(bottom: 12),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

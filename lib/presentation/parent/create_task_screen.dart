@@ -86,8 +86,10 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       if (!mounted) return;
       setState(() => _saving = false);
       if (task != null) {
-        UIHelpers.showMessageBox(context, 'Thành công', 'Đã tạo nhiệm vụ thành công!');
-        Navigator.pop(context, true);
+        if (mounted) {
+          UIHelpers.showSnackBar(context, 'Đã tạo nhiệm vụ thành công!');
+          Navigator.of(context).pop(true);
+        }
       } else {
         UIHelpers.showMessageBox(context, 'Lỗi', 'Không thể tạo nhiệm vụ. Vui lòng thử lại.', isError: true);
       }

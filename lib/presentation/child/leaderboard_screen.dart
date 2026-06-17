@@ -11,6 +11,8 @@ class LeaderboardScreen extends StatefulWidget {
 }
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
+  int _topN = 10;
+
   @override
   void initState() {
     super.initState();
@@ -34,19 +36,46 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         elevation: 0,
         centerTitle: true,
       ),
-      body: leaderboard.loading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
-          : leaderboard.error != null
-              ? Center(child: Text(leaderboard.error!, style: const TextStyle(color: AppColors.rejected)))
-              : leaderboard.topChildren.isEmpty
-                  ? const Center(child: Text('Chưa có dữ liệu bảng xếp hạng', style: TextStyle(color: AppColors.textHint)))
-                  : RefreshIndicator(
-                      onRefresh: () => context.read<LeaderboardProvider>().loadLeaderboard(),
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        itemCount: leaderboard.topChildren.length,
-                        itemBuilder: (context, index) {
-                          final user = leaderboard.topChildren[index];
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Icon(Icons.filter_list_rounded, color: AppColors.textHint, size: 20),
+                const SizedBox(width: 8),
+                DropdownButton<int>(
+                  value: _topN,
+                  underline: const SizedBox(),
+                  icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.primary),
+                  style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 14),
+                  items: const [
+                    DropdownMenuItem(value: 10, child: Text('Top 10')),
+                    DropdownMenuItem(value: 50, child: Text('Top 50')),
+                    DropdownMenuItem(value: 100, child: Text('Top 100')),
+                  ],
+                  onChanged: (val) {
+                    if (val != null) setState(() => _topN = val);
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: leaderboard.loading
+                ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                : leaderboard.error != null
+                    ? Center(child: Text(leaderboard.error!, style: const TextStyle(color: AppColors.rejected)))
+                    : leaderboard.topChildren.isEmpty
+                        ? const Center(child: Text('Chưa có dữ liệu bảng xếp hạng', style: TextStyle(color: AppColors.textHint)))
+                        : RefreshIndicator(
+                            onRefresh: () => context.read<LeaderboardProvider>().loadLeaderboard(),
+                            child: ListView.builder(
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              itemCount: leaderboard.topChildren.take(_topN).length,
+                              itemBuilder: (context, index) {
+                                final user = leaderboard.topChildren.take(_topN).toList()[index];
                           final isMe = user.id == myUserId;
 
                           // Rank styles
@@ -164,6 +193,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                         },
                       ),
                     ),
+          ),
+        ],
+      ),
     );
   }
 }

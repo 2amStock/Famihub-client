@@ -5,6 +5,7 @@ import '../../data/providers/providers.dart';
 import '../auth/login_screen.dart';
 import '../../shared/widgets/widgets.dart';
 import '../shared/food_preference_screen.dart';
+import '../../main.dart' as famihub;
 
 class ChildSettingsScreen extends StatelessWidget {
   const ChildSettingsScreen({super.key});
@@ -82,28 +83,20 @@ class ChildSettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            FamiButton(
-              text: 'Sở thích ăn uống',
-              icon: Icons.restaurant_menu_rounded,
-              color: AppColors.secondary,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const FoodPreferenceScreen()),
-                );
-              },
-            ),
-            const SizedBox(height: 16),
+
             FamiButton(
               text: 'Đăng xuất',
               icon: Icons.logout_rounded,
               color: AppColors.rejected,
               onPressed: () async {
+                context.read<TaskProvider>().clear();
+                context.read<FamilyProvider>().clear();
+                context.read<RewardProvider>().clear();
+                context.read<NotificationProvider>().clear();
                 await auth.logout();
                 if (context.mounted) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const famihub.AuthWrapper()),
                     (route) => false,
                   );
                 }

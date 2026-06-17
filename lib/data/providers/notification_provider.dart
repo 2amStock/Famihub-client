@@ -29,6 +29,12 @@ class NotificationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clear() {
+    _notifications = [];
+    _error = null;
+    notifyListeners();
+  }
+
   Future<void> markAsRead(int id) async {
     try {
       await _api.markAsRead(id);

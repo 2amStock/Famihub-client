@@ -3,7 +3,8 @@ description: FamiHub - Ứng dụng quản lý gia đình
 
 publish_to: 'none'
 
-version: 1.0.4+5
+version: 1.0.5+7
+
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -38,6 +39,10 @@ dependencies:
   pinput: ^6.0.2
   url_launcher: ^6.3.2
   table_calendar: ^3.2.0
+  firebase_core: ^4.11.0
+  firebase_messaging: ^16.4.0
+  signalr_netcore: ^1.4.4
+  flutter_local_notifications: ^22.0.1
 
 dev_dependencies:
   flutter_test:

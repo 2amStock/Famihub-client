@@ -306,24 +306,13 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                                 backgroundColor: Colors.transparent,
                                 insetPadding: const EdgeInsets.all(20),
                                 child: familyProvider.family == null
-                                    ? _FamilySetupCard()
+                                    ? const _FamilySetupCard(isInline: false)
                                     : _FamilyInfoCard(family: familyProvider),
                               ),
                             );
                           },
                         ),
-                        _CategoryItem(
-                          icon: Icons.restaurant_menu_rounded,
-                          label: 'Khẩu vị',
-                          color: Colors.orange,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const FoodPreferenceScreen()),
-                            );
-                          },
-                        ),
+
                       ],
                     ),
                   ),
@@ -377,7 +366,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
-                      child: _FamilySetupCard(),
+                      child: const _FamilySetupCard(isInline: true),
                     ),
                   ),
 
@@ -385,7 +374,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                 if (tasks.loading)
                   const SliverToBoxAdapter(
                       child: Center(child: CircularProgressIndicator()))
-                else if (tasks.tasks.isEmpty && family.family != null)
+                else if (tasks.tasks.where((t) => t.dueDate == null || t.dueDate!.isAfter(DateTime.now())).isEmpty && family.family != null)
                   const SliverToBoxAdapter(
                       child: Padding(
                     padding: EdgeInsets.all(40),
@@ -403,14 +392,15 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (ctx, i) {
-                        final t = tasks.tasks.take(5).toList()[i];
+                        final unexpiredTasks = tasks.tasks.where((t) => t.dueDate == null || t.dueDate!.isAfter(DateTime.now())).toList();
+                        final t = unexpiredTasks.take(5).toList()[i];
                         return Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 6),
                           child: _FeaturedTaskCard(task: t),
                         );
                       },
-                      childCount: tasks.tasks.take(5).length,
+                      childCount: tasks.tasks.where((t) => t.dueDate == null || t.dueDate!.isAfter(DateTime.now())).take(5).length,
                     ),
                   ),
 
@@ -439,12 +429,16 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
 }
 
 class _FamilySetupCard extends StatefulWidget {
+  final bool isInline;
+  const _FamilySetupCard({this.isInline = false});
+
   @override
   State<_FamilySetupCard> createState() => _FamilySetupCardState();
 }
 
 class _FamilySetupCardState extends State<_FamilySetupCard> {
   final _nameCtrl = TextEditingController();
+  bool _isHidden = false;
 
   @override
   void dispose() {
@@ -454,6 +448,8 @@ class _FamilySetupCardState extends State<_FamilySetupCard> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isHidden) return const SizedBox.shrink();
+    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -461,53 +457,40 @@ class _FamilySetupCardState extends State<_FamilySetupCard> {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.secondary),
       ),
-      child: Stack(
+      child: Column(
         children: [
-          Column(
-            children: [
-              const Icon(Icons.home_rounded,
-                  size: 40, color: AppColors.primary),
-              const SizedBox(height: 8),
-              const Text('Tạo gia đình của bạn',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
-              const SizedBox(height: 4),
-              const Text('Tạo gia đình để bắt đầu giao việc cho các con',
-                  textAlign: TextAlign.center,
-                  style:
-                      TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _nameCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Tên gia đình',
-                  prefixIcon: Icon(Icons.family_restroom_rounded),
-                ),
-              ),
-              const SizedBox(height: 12),
-              FamiButton(
-                text: 'Tạo gia đình',
-                icon: Icons.add_home_rounded,
-                onPressed: () async {
-                  if (_nameCtrl.text.trim().isEmpty) return;
-                  final ok = await context
-                      .read<FamilyProvider>()
-                      .createFamily(_nameCtrl.text.trim());
-                  if (ok && context.mounted) {
-                    UIHelpers.showMessageBox(
-                        context, 'Thành công', 'Tạo gia đình thành công!');
-                  }
-                },
-              ),
-            ],
-          ),
-          Positioned(
-            top: -8,
-            right: -8,
-            child: IconButton(
-              icon: const Icon(Icons.close_rounded,
-                  color: AppColors.textSecondary),
-              onPressed: () => Navigator.of(context).pop(),
+          const Icon(Icons.home_rounded,
+              size: 40, color: AppColors.primary),
+          const SizedBox(height: 8),
+          const Text('Tạo gia đình của bạn',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+          const SizedBox(height: 4),
+          const Text('Tạo gia đình để bắt đầu giao việc cho các con',
+              textAlign: TextAlign.center,
+              style:
+                  TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _nameCtrl,
+            decoration: const InputDecoration(
+              labelText: 'Tên gia đình',
+              prefixIcon: Icon(Icons.family_restroom_rounded),
             ),
+          ),
+          const SizedBox(height: 12),
+          FamiButton(
+            text: 'Tạo gia đình',
+            icon: Icons.add_home_rounded,
+            onPressed: () async {
+              if (_nameCtrl.text.trim().isEmpty) return;
+              final ok = await context
+                  .read<FamilyProvider>()
+                  .createFamily(_nameCtrl.text.trim());
+              if (ok && context.mounted) {
+                UIHelpers.showMessageBox(
+                    context, 'Thành công', 'Tạo gia đình thành công!');
+              }
+            },
           ),
         ],
       ),
@@ -566,9 +549,8 @@ class _FamilyInfoCard extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close_rounded,
-                    color: AppColors.textSecondary),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close_rounded, color: AppColors.textSecondary),
               ),
             ],
           ),
