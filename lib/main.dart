@@ -77,6 +77,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         context.read<TaskProvider>().loadTasks();
         context.read<RewardProvider>().loadAll();
         context.read<NotificationProvider>().loadNotifications();
+        context.read<FamilyProvider>().loadFamily();
       }
     };
     _checkAuth();
