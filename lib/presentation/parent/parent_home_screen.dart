@@ -889,7 +889,7 @@ class _FeaturedTaskCard extends StatelessWidget {
                             child: Stack(
                               children: [
                                 CachedNetworkImage(
-                                  imageUrl: task.proof!.fullPhotoUrl,
+                                  imageUrl: task.proof!.photoUrls.isNotEmpty ? task.proof!.photoUrls.first : '',
                                   height: 240,
                                   width: double.infinity,
                                   fit: BoxFit.cover,

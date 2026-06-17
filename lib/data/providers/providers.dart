@@ -97,6 +97,14 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<String?> uploadAvatar(Uint8List bytes, String fileName) async {
+    try {
+      return await _api.uploadFile(bytes, fileName);
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<bool> changePassword(String currentPassword, String newPassword) async {
     _setLoading(true);
     try {
@@ -220,10 +228,18 @@ class TaskProvider extends ChangeNotifier {
   }
 
   Future<bool> submitTask(
-      int taskId, String? note, Uint8List bytes, String fileName) async {
+      int taskId, String? note, List<Uint8List> bytesList, List<String> fileNames) async {
     try {
-      // 1. Upload to Cloud first (using bytes for Web support)
-      final photoUrl = await _api.uploadFile(bytes, fileName);
+      if (bytesList.isEmpty || bytesList.length != fileNames.length) {
+        return false;
+      }
+      // 1. Upload to Cloud first
+      List<String> uploadedUrls = [];
+      for (int i = 0; i < bytesList.length; i++) {
+        final url = await _api.uploadFile(bytesList[i], fileNames[i]);
+        uploadedUrls.add(url);
+      }
+      final photoUrl = uploadedUrls.join(',');
 
       // 2. Submit Task with the cloud URL
       final updated = await _api.submitTask(taskId, note, photoUrl);
