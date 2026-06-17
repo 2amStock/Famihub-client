@@ -538,14 +538,24 @@ class _JoinFamilyCardState extends State<_JoinFamilyCard> {
                     .read<FamilyProvider>()
                     .joinFamily(_ctrl.text.trim());
                 if (context.mounted) {
-                  UIHelpers.showMessageBox(
-                    context,
-                    ok ? 'Thành công' : 'Lỗi',
-                    ok
-                        ? 'Tham gia gia đình thành công!'
-                        : 'Mã mời không hợp lệ',
-                    isError: !ok,
-                  );
+                  if (ok) {
+                    await context.read<AuthProvider>().tryAutoLogin();
+                    if (context.mounted) {
+                      context.read<TaskProvider>().loadTasks();
+                      context.read<RewardProvider>().loadAll();
+                    }
+                  }
+                  
+                  if (context.mounted) {
+                    UIHelpers.showMessageBox(
+                      context,
+                      ok ? 'Thành công' : 'Lỗi',
+                      ok
+                          ? 'Tham gia gia đình thành công!'
+                          : 'Mã mời không hợp lệ',
+                      isError: !ok,
+                    );
+                  }
                 }
               } catch (e) {
                 if (context.mounted) {

@@ -242,9 +242,8 @@ class _TaskList extends StatelessWidget {
 
   Future<void> _submitProof(BuildContext context, int taskId) async {
     final picker = ImagePicker();
-    List<XFile> selectedImages = [];
 
-    await showModalBottomSheet(
+    final source = await showModalBottomSheet<ImageSource>(
       context: context,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => SafeArea(
@@ -253,25 +252,28 @@ class _TaskList extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.camera_alt),
               title: const Text('Chụp ảnh'),
-              onTap: () async {
-                Navigator.pop(ctx);
-                final image = await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
-                if (image != null) selectedImages.add(image);
-              },
+              onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library),
               title: const Text('Chọn từ thư viện'),
-              onTap: () async {
-                Navigator.pop(ctx);
-                final images = await picker.pickMultiImage(imageQuality: 80);
-                selectedImages.addAll(images);
-              },
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
           ],
         ),
       ),
     );
+
+    if (source == null) return;
+
+    List<XFile> selectedImages = [];
+    if (source == ImageSource.camera) {
+      final image = await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+      if (image != null) selectedImages.add(image);
+    } else {
+      final images = await picker.pickMultiImage(imageQuality: 80);
+      selectedImages.addAll(images);
+    }
 
     if (selectedImages.isNotEmpty) {
       if (!context.mounted) return;

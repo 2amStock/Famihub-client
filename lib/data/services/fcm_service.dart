@@ -83,6 +83,7 @@ class FcmService {
           .withUrl(hubUrl, options: HttpConnectionOptions(
             accessTokenFactory: () async => token,
           ))
+          .withAutomaticReconnect()
           .build();
 
       _hubConnection?.on('ReceiveNotification', (arguments) {
@@ -93,6 +94,10 @@ class FcmService {
           _showLocalNotification(title, body);
           if (onRefreshRequired != null) onRefreshRequired!();
         }
+      });
+
+      _hubConnection?.on('RefreshData', (arguments) {
+        if (onRefreshRequired != null) onRefreshRequired!();
       });
 
       await _hubConnection?.start();
