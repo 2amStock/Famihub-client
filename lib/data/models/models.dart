@@ -114,6 +114,22 @@ class TaskProof {
     return url;
   }
 
+  List<String> get photoUrls {
+    if (photoUrl.isEmpty) return [];
+    return photoUrl.split(',').map((url) {
+      String fullUrl = url.trim();
+      if (fullUrl.isEmpty) return '';
+      if (!fullUrl.startsWith('http')) {
+        fullUrl = '${ApiConstants.baseUrl}$fullUrl';
+      }
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android && 
+          (fullUrl.contains('localhost') || fullUrl.contains('127.0.0.1'))) {
+        fullUrl = fullUrl.replaceAll('localhost', '10.0.2.2').replaceAll('127.0.0.1', '10.0.2.2');
+      }
+      return fullUrl;
+    }).where((u) => u.isNotEmpty).toList();
+  }
+
   factory TaskProof.fromJson(Map<String, dynamic> json) => TaskProof(
         id: json['id'],
         photoUrl: json['photoUrl'],

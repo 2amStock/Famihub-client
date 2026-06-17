@@ -4,6 +4,8 @@ import '../../../core/theme/app_theme.dart';
 import '../../../data/providers/providers.dart';
 import '../../../shared/widgets/widgets.dart';
 import '../../../core/utils/ui_helpers.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:typed_data';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -15,6 +17,7 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _nameCtrl = TextEditingController();
   final _avatarUrlCtrl = TextEditingController();
+  bool _uploadingAvatar = false;
 
   @override
   void initState() {
@@ -65,11 +68,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: AppColors.primary.withOpacity(0.1),
-                    backgroundImage: _avatarUrlCtrl.text.isNotEmpty ? NetworkImage(_avatarUrlCtrl.text) : null,
-                    child: _avatarUrlCtrl.text.isEmpty ? const Icon(Icons.person, size: 50, color: AppColors.primary) : null,
+                  GestureDetector(
+                    onTap: _uploadingAvatar ? null : _pickAndUploadAvatar,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundColor: AppColors.primary.withOpacity(0.1),
+                          backgroundImage: _avatarUrlCtrl.text.isNotEmpty ? NetworkImage(_avatarUrlCtrl.text) : null,
+                          child: _avatarUrlCtrl.text.isEmpty ? const Icon(Icons.person, size: 50, color: AppColors.primary) : null,
+                        ),
+                        Positioned(
+                          bottom: 0, right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.camera_alt, color: Colors.white, size: 18),
+                          ),
+                        ),
+                        if (_uploadingAvatar)
+                          const CircularProgressIndicator(color: Colors.white),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 24),
                   TextField(
@@ -78,15 +102,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       labelText: 'Họ và tên',
                       prefixIcon: Icon(Icons.person_outline_rounded),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _avatarUrlCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Link ảnh đại diện (Tùy chọn)',
-                      prefixIcon: Icon(Icons.image_outlined),
-                    ),
-                    onChanged: (_) => setState(() {}),
                   ),
                   const SizedBox(height: 32),
                   FamiButton(
@@ -121,5 +136,54 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _pickAndUploadAvatar() async {
+    final picker = ImagePicker();
+    XFile? selectedImage;
+
+    await showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Chụp ảnh mới'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                selectedImage = await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Chọn từ thư viện'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                selectedImage = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (selectedImage != null) {
+      if (!mounted) return;
+      setState(() => _uploadingAvatar = true);
+      final bytes = await selectedImage!.readAsBytes();
+      final url = await context.read<AuthProvider>().uploadAvatar(bytes, selectedImage!.name);
+      if (!mounted) return;
+      setState(() {
+        _uploadingAvatar = false;
+        if (url != null) {
+          _avatarUrlCtrl.text = url;
+          UIHelpers.showSnackBar(context, 'Tải ảnh lên thành công. Vui lòng bấm "Lưu thay đổi".');
+        } else {
+          UIHelpers.showSnackBar(context, 'Lỗi tải ảnh lên', isError: true);
+        }
+      });
+    }
   }
 }

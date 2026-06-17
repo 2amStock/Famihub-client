@@ -232,50 +232,81 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Stack(
-                          children: [
-                            CachedNetworkImage(
-                              imageUrl: _task.proof!.fullPhotoUrl,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: 300,
-                              placeholder: (_, __) => Container(
-                                height: 300,
-                                color: const Color(0xFFF2F2F7),
-                                child: const Center(
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary)),
-                              ),
-                              errorWidget: (_, __, ___) => Container(
-                                height: 200,
-                                color: const Color(0xFFF2F2F7),
-                                child: const Center(
-                                    child: Icon(Icons.broken_image_rounded,
-                                        size: 48, color: AppColors.textHint)),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 12, left: 12, right: 12,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.6),
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.person_pin_rounded, color: Colors.white, size: 14),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'Nộp bởi ${_task.proof!.child?.name ?? "Con"} • ${DateFormat('HH:mm').format(_task.proof!.submittedAt)}',
-                                      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                      SizedBox(
+                        height: 300,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _task.proof!.photoUrls.length,
+                          separatorBuilder: (context, index) => const SizedBox(width: 12),
+                          itemBuilder: (context, index) {
+                            final url = _task.proof!.photoUrls[index];
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Stack(
+                                children: [
+                                  CachedNetworkImage(
+                                    imageUrl: url,
+                                    fit: BoxFit.cover,
+                                    width: MediaQuery.of(context).size.width - 96,
+                                    height: 300,
+                                    placeholder: (_, __) => Container(
+                                      width: MediaQuery.of(context).size.width - 96,
+                                      height: 300,
+                                      color: const Color(0xFFF2F2F7),
+                                      child: const Center(
+                                          child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary)),
                                     ),
-                                  ],
-                                ),
+                                    errorWidget: (_, __, ___) => Container(
+                                      width: MediaQuery.of(context).size.width - 96,
+                                      height: 300,
+                                      color: const Color(0xFFF2F2F7),
+                                      child: const Center(
+                                          child: Icon(Icons.broken_image_rounded,
+                                              size: 48, color: AppColors.textHint)),
+                                    ),
+                                  ),
+                                  if (index == 0) Positioned(
+                                    bottom: 12, left: 12, right: 12,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withOpacity(0.6),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.person_pin_rounded, color: Colors.white, size: 14),
+                                          const SizedBox(width: 8),
+                                          Flexible(
+                                            child: Text(
+                                              'Nộp bởi ${_task.proof!.child?.name ?? "Con"} • ${DateFormat('HH:mm').format(_task.proof!.submittedAt)}',
+                                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  if (_task.proof!.photoUrls.length > 1) Positioned(
+                                    top: 12, right: 12,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withOpacity(0.6),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        '${index + 1}/${_task.proof!.photoUrls.length}',
+                                        style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
                       ),
                       if (_task.proof!.note != null && _task.proof!.note!.isNotEmpty) ...[

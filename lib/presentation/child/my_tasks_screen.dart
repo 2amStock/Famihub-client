@@ -240,18 +240,70 @@ class _TaskList extends StatelessWidget {
 
   Future<void> _submitProof(BuildContext context, int taskId) async {
     final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.camera, imageQuality: 100);
+    List<XFile> selectedImages = [];
 
-    if (image != null) {
+    await showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Chụp ảnh'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                final image = await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+                if (image != null) selectedImages.add(image);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Chọn từ thư viện'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                final images = await picker.pickMultiImage(imageQuality: 80);
+                selectedImages.addAll(images);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (selectedImages.isNotEmpty) {
       if (!context.mounted) return;
-      
-      // Hiển thị loading
-      UIHelpers.showMessageBox(context, 'Thông báo', 'Đang gửi ảnh...');
 
-      final bytes = await image.readAsBytes();
-      final success = await context.read<TaskProvider>().submitTask(taskId, null, bytes, image.name);
+      // Hiển thị loading (khóa màn hình)
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => PopScope(
+          canPop: false,
+          child: AlertDialog(
+            content: Row(
+              children: const [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Text('Đang tải ảnh lên...'),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      List<Uint8List> bytesList = [];
+      List<String> fileNames = [];
+      for (var img in selectedImages) {
+        bytesList.add(await img.readAsBytes());
+        fileNames.add(img.name);
+      }
+
+      final success = await context.read<TaskProvider>().submitTask(taskId, null, bytesList, fileNames);
 
       if (!context.mounted) return;
+      Navigator.of(context, rootNavigator: true).pop(); // Đóng dialog loading
+
       if (success) {
         UIHelpers.showMessageBox(context, 'Thành công', 'Đã gửi ảnh thành công!');
       } else {
