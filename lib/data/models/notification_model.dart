@@ -28,7 +28,7 @@ class AppNotification {
       type: json['type'] ?? '',
       relatedId: json['relatedId'],
       isRead: json['isRead'] ?? false,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']).toLocal() : DateTime.now(),
     );
   }
 }

@@ -16,6 +16,7 @@ class _TaskListScreenState extends State<TaskListScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tab;
   final List<String> _statuses = ['Tất cả', 'Chờ duyệt', 'Hoàn thành'];
+  int? _selectedChildId;
 
   @override
   void initState() {
@@ -43,6 +44,32 @@ class _TaskListScreenState extends State<TaskListScreen>
           unselectedLabelColor: AppColors.textSecondary,
           tabs: _statuses.map((s) => Tab(text: s)).toList(),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Consumer<FamilyProvider>(
+              builder: (context, family, child) {
+                if (family.children.isEmpty) return const SizedBox.shrink();
+                return DropdownButton<int?>(
+                  value: _selectedChildId,
+                  hint: const Text('Tất cả bé', style: TextStyle(color: AppColors.primary, fontSize: 14)),
+                  underline: const SizedBox(),
+                  icon: const Icon(Icons.filter_list_rounded, color: AppColors.primary),
+                  items: [
+                    const DropdownMenuItem<int?>(value: null, child: Text('Tất cả bé')),
+                    ...family.children.map((c) => DropdownMenuItem<int?>(
+                          value: c.id,
+                          child: Text(c.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                        )),
+                  ],
+                  onChanged: (val) {
+                    setState(() => _selectedChildId = val);
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         color: AppColors.primary,
@@ -50,9 +77,9 @@ class _TaskListScreenState extends State<TaskListScreen>
         child: TabBarView(
           controller: _tab,
           children: [
-            _TaskTabView(items: tasks.tasks),
-            _TaskTabView(items: tasks.submittedTasks),
-            _TaskTabView(items: tasks.completedTasks),
+            _TaskTabView(items: tasks.tasks.where((t) => _selectedChildId == null || t.assignedTo?.id == _selectedChildId).toList()),
+            _TaskTabView(items: tasks.submittedTasks.where((t) => _selectedChildId == null || t.assignedTo?.id == _selectedChildId).toList()),
+            _TaskTabView(items: tasks.completedTasks.where((t) => _selectedChildId == null || t.assignedTo?.id == _selectedChildId).toList()),
           ],
         ),
       ),

@@ -16,6 +16,8 @@ class MealSuggestionScreen extends StatefulWidget {
 
 class _MealSuggestionScreenState extends State<MealSuggestionScreen> {
   bool _showFavorites = false;
+  String? _selectedMealType;
+  DateTime? _selectedDate;
 
   @override
   void initState() {
@@ -205,6 +207,16 @@ class _MealSuggestionScreenState extends State<MealSuggestionScreen> {
           ],
         ),
       );
+    } else if (result != null && result.isNotEmpty && mounted) {
+      final firstId = result.first.id;
+      final group = provider.history.firstWhere(
+        (g) => g.dishes.any((d) => d.id == firstId),
+        orElse: () => MealSuggestionGroup(date: DateTime.now().toIso8601String(), mealType: mealType, dishes: result),
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => MealSessionDetailScreen(session: group)),
+      );
     }
   }
 
@@ -212,16 +224,27 @@ class _MealSuggestionScreenState extends State<MealSuggestionScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<MealSuggestionProvider>();
     final history = provider.history;
-    final displayList = _showFavorites 
-        ? history
-            .map((g) => MealSuggestionGroup(
-                  date: g.date,
-                  mealType: g.mealType,
-                  dishes: g.dishes.where((d) => d.isFavorite).toList(),
-                ))
-            .where((g) => g.dishes.isNotEmpty)
-            .toList()
-        : history;
+    var displayList = history;
+    if (_selectedDate != null) {
+      displayList = displayList.where((g) {
+        final d = DateTime.tryParse(g.date)?.toLocal();
+        if (d == null) return false;
+        return d.year == _selectedDate!.year && d.month == _selectedDate!.month && d.day == _selectedDate!.day;
+      }).toList();
+    }
+    if (_selectedMealType != null) {
+      displayList = displayList.where((g) => g.mealType.toLowerCase().contains(_selectedMealType!.toLowerCase())).toList();
+    }
+    if (_showFavorites) {
+      displayList = displayList
+          .map((g) => MealSuggestionGroup(
+                date: g.date,
+                mealType: g.mealType,
+                dishes: g.dishes.where((d) => d.isFavorite).toList(),
+              ))
+          .where((g) => g.dishes.isNotEmpty)
+          .toList();
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -230,15 +253,70 @@ class _MealSuggestionScreenState extends State<MealSuggestionScreen> {
         elevation: 0,
         actions: [
           IconButton(
+            icon: Icon(Icons.calendar_month_rounded, color: _selectedDate != null ? AppColors.primary : AppColors.textPrimary),
+            onPressed: () async {
+              if (_selectedDate != null) {
+                // If already selected, allow clearing by tapping again, or let them pick.
+                // It's better to show picker but add a clear button in the body
+              }
+              final date = await showDatePicker(
+                context: context,
+                initialDate: _selectedDate ?? DateTime.now(),
+                firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                lastDate: DateTime.now().add(const Duration(days: 365)),
+                builder: (ctx, child) => Theme(
+                  data: Theme.of(ctx).copyWith(
+                    colorScheme: const ColorScheme.light(primary: AppColors.primary),
+                  ),
+                  child: child!,
+                ),
+              );
+              if (date != null) {
+                setState(() => _selectedDate = date);
+              }
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: DropdownButton<String?>(
+              value: _selectedMealType,
+              underline: const SizedBox(),
+              icon: const Icon(Icons.filter_list_rounded, color: AppColors.primary),
+              items: const [
+                DropdownMenuItem(value: null, child: Text('Tất cả bữa', style: TextStyle(fontSize: 14))),
+                DropdownMenuItem(value: 'breakfast', child: Text('Bữa sáng', style: TextStyle(fontSize: 14))),
+                DropdownMenuItem(value: 'lunch', child: Text('Bữa trưa', style: TextStyle(fontSize: 14))),
+                DropdownMenuItem(value: 'dinner', child: Text('Bữa tối', style: TextStyle(fontSize: 14))),
+              ],
+              onChanged: (val) {
+                setState(() => _selectedMealType = val);
+              },
+            ),
+          ),
+          IconButton(
             icon: Icon(_showFavorites ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                 color: _showFavorites ? AppColors.secondary : AppColors.textPrimary),
             onPressed: () => setState(() => _showFavorites = !_showFavorites),
           )
         ],
       ),
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-        child: provider.loading
+      body: Column(
+        children: [
+          if (_selectedDate != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              alignment: Alignment.centerLeft,
+              child: Chip(
+                backgroundColor: AppColors.primary.withOpacity(0.1),
+                label: Text('Ngày: ${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}', style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                deleteIconColor: AppColors.primary,
+                onDeleted: () => setState(() => _selectedDate = null),
+              ),
+            ),
+          Expanded(
+            child: Container(
+              decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
+              child: provider.loading
             ? const Center(child: CircularProgressIndicator())
             : displayList.isEmpty
                 ? Center(
@@ -260,6 +338,9 @@ class _MealSuggestionScreenState extends State<MealSuggestionScreen> {
                       return _SessionCard(session: group);
                     },
                   ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showSuggestionDialog,

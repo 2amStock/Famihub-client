@@ -9,6 +9,7 @@ import '../subscription/subscription_screen.dart';
 import 'settings/edit_profile_screen.dart';
 import 'settings/change_password_screen.dart';
 import 'settings/static_settings_screens.dart';
+import '../../main.dart' as famihub;
 
 class ParentSettingsScreen extends StatelessWidget {
   const ParentSettingsScreen({super.key});
@@ -188,11 +189,14 @@ class ParentSettingsScreen extends StatelessWidget {
               icon: Icons.logout_rounded,
               color: Colors.red[400],
               onPressed: () async {
+                context.read<TaskProvider>().clear();
+                context.read<FamilyProvider>().clear();
+                context.read<RewardProvider>().clear();
+                context.read<NotificationProvider>().clear();
                 await auth.logout();
                 if (context.mounted) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const famihub.AuthWrapper()),
                     (route) => false,
                   );
                 }

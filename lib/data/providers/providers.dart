@@ -263,6 +263,12 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
+  void clear() {
+    _tasks = [];
+    _error = null;
+    notifyListeners();
+  }
+
   void _setLoading(bool val) {
     _loading = val;
     notifyListeners();
@@ -318,6 +324,11 @@ class FamilyProvider extends ChangeNotifier {
       }
       return false;
     }
+  }
+
+  void clear() {
+    _family = null;
+    notifyListeners();
   }
 
   List<AppUser> get children =>
@@ -480,6 +491,13 @@ class RewardProvider extends ChangeNotifier {
     }
   }
 
+  void clear() {
+    _rewards = [];
+    _redemptions = [];
+    _error = null;
+    notifyListeners();
+  }
+
   void _setLoading(bool val) {
     _loading = val;
     notifyListeners();
@@ -543,6 +561,12 @@ class FamilyEventProvider extends ChangeNotifier {
     }
   }
 
+  void clear() {
+    _events = [];
+    _error = null;
+    notifyListeners();
+  }
+
   void _setLoading(bool val) {
     _loading = val;
     notifyListeners();
@@ -586,6 +610,12 @@ class FoodPreferenceProvider extends ChangeNotifier {
     } finally {
       _setLoading(false);
     }
+  }
+
+  void clear() {
+    _preference = null;
+    _error = null;
+    notifyListeners();
   }
 
   void _setLoading(bool val) {
@@ -634,6 +664,13 @@ class SubscriptionProvider extends ChangeNotifier {
       notifyListeners();
       return null;
     }
+  }
+
+  void clear() {
+    _plans = [];
+    _currentSubscription = null;
+    _error = null;
+    notifyListeners();
   }
 
   void _setLoading(bool val) {
@@ -731,6 +768,12 @@ class MealSuggestionProvider extends ChangeNotifier {
     }
   }
 
+  void clear() {
+    _history = [];
+    _error = null;
+    notifyListeners();
+  }
+
   void _setLoading(bool val) {
     _loading = val;
     notifyListeners();
@@ -760,6 +803,12 @@ class LeaderboardProvider extends ChangeNotifier {
     } finally {
       _setLoading(false);
     }
+  }
+
+  void clear() {
+    _topChildren = [];
+    _error = null;
+    notifyListeners();
   }
 
   void _setLoading(bool val) {

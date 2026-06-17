@@ -106,6 +106,10 @@ class ApiService {
     return AppUser.fromJson(res.data);
   }
 
+  Future<void> updateFcmToken(String token) async {
+    await _dio.put('/Auth/fcm-token', data: {'token': token});
+  }
+
   Future<void> changePassword(String currentPassword, String newPassword) async {
     try {
       await _dio.put('/User/change-password', data: {

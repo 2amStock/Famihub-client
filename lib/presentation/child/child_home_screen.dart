@@ -37,6 +37,7 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
 
     final myPending = tasks.tasks
         .where((t) => t.isPending || t.isInProgress || t.isRejected)
+        .where((t) => t.dueDate == null || t.dueDate!.isAfter(DateTime.now()))
         .toList();
 
     return Scaffold(

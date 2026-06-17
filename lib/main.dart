@@ -8,6 +8,7 @@ import 'presentation/parent/parent_main_screen.dart';
 import 'presentation/child/child_main_screen.dart';
 
 import 'package:flutter/services.dart';
+import 'data/services/fcm_service.dart' as data_services;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,12 +19,15 @@ void main() async {
     MultiProvider(
       providers: [
         Provider<ApiService>.value(value: apiService),
+        ProxyProvider<ApiService, data_services.FcmService>(
+          update: (_, api, __) => data_services.FcmService(api),
+        ),
         ChangeNotifierProvider(create: (_) => AuthProvider(apiService)),
         ChangeNotifierProvider(create: (_) => FamilyProvider(apiService)),
         ChangeNotifierProvider(create: (_) => TaskProvider(apiService)),
         ChangeNotifierProvider(create: (_) => RewardProvider(apiService)),
         ChangeNotifierProvider(create: (_) => FamilyEventProvider(apiService)),
-        ChangeNotifierProvider(create: (_) => FoodPreferenceProvider(apiService)),
+
         ChangeNotifierProvider(create: (_) => SubscriptionProvider(apiService)),
         ChangeNotifierProvider(create: (_) => MealSuggestionProvider(apiService)),
         ChangeNotifierProvider(create: (_) => NotificationProvider(apiService)),
@@ -68,12 +72,22 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
+    data_services.FcmService.onRefreshRequired = () {
+      if (mounted) {
+        context.read<TaskProvider>().loadTasks();
+        context.read<RewardProvider>().loadAll();
+        context.read<NotificationProvider>().loadNotifications();
+      }
+    };
     _checkAuth();
   }
 
   Future<void> _checkAuth() async {
     final auth = context.read<AuthProvider>();
     await auth.tryAutoLogin();
+    if (auth.isLoggedIn && mounted) {
+      context.read<data_services.FcmService>().initialize();
+    }
   }
 
   @override
@@ -92,6 +106,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
       return const OnboardingScreen();
     }
     
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<data_services.FcmService>().initialize();
+      }
+    });
+
     return auth.user!.isParent 
         ? const ParentMainScreen() 
         : const ChildMainScreen();

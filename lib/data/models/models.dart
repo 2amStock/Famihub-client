@@ -57,7 +57,7 @@ class AppUser {
         avatar: json['avatar'],
         currentPlanId: json['currentPlanId'] ?? 1,
         subscriptionExpiryTime: json['subscriptionExpiryTime'] != null 
-            ? DateTime.parse(json['subscriptionExpiryTime']) 
+            ? DateTime.parse(json['subscriptionExpiryTime']).toLocal() 
             : null,
       );
 }
@@ -118,7 +118,7 @@ class TaskProof {
         id: json['id'],
         photoUrl: json['photoUrl'],
         note: json['note'],
-        submittedAt: DateTime.parse(json['submittedAt']),
+        submittedAt: DateTime.parse(json['submittedAt']).toLocal(),
         child: json['child'] != null ? AppUser.fromJson(json['child']) : null,
       );
 }
@@ -162,8 +162,8 @@ class FamilyTask {
         description: json['description'],
         points: json['points'],
         status: json['status'],
-        dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate']) : null,
-        createdAt: DateTime.parse(json['createdAt']),
+        dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate']).toLocal() : null,
+        createdAt: DateTime.parse(json['createdAt']).toLocal(),
         assignedTo: json['assignedTo'] != null ? AppUser.fromJson(json['assignedTo']) : null,
         createdBy: json['createdBy'] != null ? AppUser.fromJson(json['createdBy']) : null,
         proof: json['proof'] != null ? TaskProof.fromJson(json['proof']) : null,
@@ -193,7 +193,7 @@ class Reward {
         title: json['title'],
         description: json['description'],
         requiredPoints: json['requiredPoints'],
-        createdAt: DateTime.parse(json['createdAt']),
+        createdAt: DateTime.parse(json['createdAt']).toLocal(),
         createdBy: json['createdBy'] != null ? AppUser.fromJson(json['createdBy']) : null,
       );
 }
@@ -235,8 +235,8 @@ class RewardRedemption {
         requiredPoints: json['requiredPoints'] ?? 0,
         status: json['status'],
         parentNote: json['parentNote'],
-        createdAt: DateTime.parse(json['createdAt']),
-        updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+        createdAt: DateTime.parse(json['createdAt']).toLocal(),
+        updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']).toLocal() : null,
         child: json['child'] != null ? AppUser.fromJson(json['child']) : null,
       );
 }
@@ -335,8 +335,8 @@ class UserSubscription {
   factory UserSubscription.fromJson(Map<String, dynamic> json) => UserSubscription(
         userId: json['userId'],
         plan: SubscriptionPlan.fromJson(json['plan']),
-        startDate: DateTime.parse(json['startDate']),
-        endDate: DateTime.parse(json['endDate']),
+        startDate: DateTime.parse(json['startDate']).toLocal(),
+        endDate: DateTime.parse(json['endDate']).toLocal(),
         status: json['status'],
       );
 }
@@ -429,7 +429,7 @@ class MealSuggestion {
         cuisineType: json['cuisineType'],
         nutritionInfo: json['nutritionInfo'] != null ? NutritionInfo.fromJson(json['nutritionInfo']) : null,
         isFavorite: json['isFavorite'] ?? false,
-        createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
+        createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']).toLocal() : DateTime.now(),
         requestedByName: json['requestedByName'],
       );
 }
