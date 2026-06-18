@@ -87,11 +87,16 @@ class FcmService {
           .build();
 
       _hubConnection?.on('ReceiveNotification', (arguments) {
-        if (arguments != null && arguments.isNotEmpty) {
-          final data = arguments[0] as Map<String, dynamic>;
-          final title = data['title']?.toString();
-          final body = data['body']?.toString();
-          _showLocalNotification(title, body);
+        try {
+          if (arguments != null && arguments.isNotEmpty) {
+            final data = arguments[0] as Map;
+            final title = data['title']?.toString();
+            final body = data['body']?.toString();
+            _showLocalNotification(title, body);
+            if (onRefreshRequired != null) onRefreshRequired!();
+          }
+        } catch (e) {
+          debugPrint("ReceiveNotification parse error: $e");
           if (onRefreshRequired != null) onRefreshRequired!();
         }
       });
