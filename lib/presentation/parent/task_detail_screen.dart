@@ -96,6 +96,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Watch task provider to get real-time updates
+    final tasks = context.watch<TaskProvider>();
+    final updatedTask = tasks.tasks.firstWhere((t) => t.id == _task.id, orElse: () => _task);
+    _task = updatedTask;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Chi tiết nhiệm vụ')),
       body: Container(

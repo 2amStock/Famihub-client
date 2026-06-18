@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'data/providers/providers.dart';
@@ -81,6 +83,19 @@ class _AuthWrapperState extends State<AuthWrapper> {
       }
     };
     _checkAuth();
+    _checkForUpdate();
+  }
+
+  Future<void> _checkForUpdate() async {
+    if (!Platform.isAndroid) return;
+    try {
+      final info = await InAppUpdate.checkForUpdate();
+      if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+        await InAppUpdate.performImmediateUpdate();
+      }
+    } catch (e) {
+      debugPrint("In-app update error: $e");
+    }
   }
 
   Future<void> _checkAuth() async {
