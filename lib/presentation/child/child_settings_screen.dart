@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/providers.dart';
-import '../auth/login_screen.dart';
 import '../../shared/widgets/widgets.dart';
-import '../shared/food_preference_screen.dart';
 import '../../main.dart' as famihub;
 
 class ChildSettingsScreen extends StatelessWidget {
@@ -18,7 +16,8 @@ class ChildSettingsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Cài đặt', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Cài đặt',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 0,
@@ -52,7 +51,8 @@ class ChildSettingsScreen extends StatelessWidget {
                     child: const CircleAvatar(
                       radius: 40,
                       backgroundColor: Colors.white,
-                      child: Icon(Icons.face_retouching_natural_rounded, size: 40, color: AppColors.secondary),
+                      child: Icon(Icons.face_retouching_natural_rounded,
+                          size: 40, color: AppColors.secondary),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -64,11 +64,11 @@ class ChildSettingsScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(user?.email ?? '',
                       style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary)),
+                          fontSize: 14, color: AppColors.textSecondary)),
                   const SizedBox(height: 16),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: AppColors.secondary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
@@ -83,7 +83,6 @@ class ChildSettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-
             FamiButton(
               text: 'Đăng xuất',
               icon: Icons.logout_rounded,
@@ -96,7 +95,8 @@ class ChildSettingsScreen extends StatelessWidget {
                 await auth.logout();
                 if (context.mounted) {
                   Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const famihub.AuthWrapper()),
+                    MaterialPageRoute(
+                        builder: (_) => const famihub.AuthWrapper()),
                     (route) => false,
                   );
                 }

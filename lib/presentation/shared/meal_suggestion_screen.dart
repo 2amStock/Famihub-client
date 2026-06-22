@@ -33,7 +33,7 @@ class _MealSuggestionScreenState extends State<MealSuggestionScreen> {
     int numberOfDishes = 3;
     final ingredientsCtrl = TextEditingController();
     final cuisineCtrl = TextEditingController();
-    final notesCtrl = TextEditingController();
+
 
     showModalBottomSheet(
       context: context,

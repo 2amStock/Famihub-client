@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/providers.dart';
-import '../auth/login_screen.dart';
+
 import '../../shared/widgets/widgets.dart';
 import '../../core/utils/ui_helpers.dart';
 import '../subscription/subscription_screen.dart';

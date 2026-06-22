@@ -9,7 +9,7 @@ import 'presentation/auth/onboarding_screen.dart';
 import 'presentation/parent/parent_main_screen.dart';
 import 'presentation/child/child_main_screen.dart';
 
-import 'package:flutter/services.dart';
+
 import 'data/services/fcm_service.dart' as data_services;
 
 void main() async {
