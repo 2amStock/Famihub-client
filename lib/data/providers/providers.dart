@@ -438,6 +438,25 @@ class RewardProvider extends ChangeNotifier {
     }
   }
 
+  Future<Reward?> suggestReward({
+    required String title,
+    String? description,
+  }) async {
+    try {
+      final reward = await _api.suggestReward(title, description);
+      _rewards.insert(0, reward);
+      notifyListeners();
+      return reward;
+    } catch (e) {
+      if (e is DioException &&
+          e.response?.statusCode == 400 &&
+          e.response?.data != null) {
+        throw Exception(e.response?.data['message'] ?? 'Lỗi đề xuất phần thưởng');
+      }
+      throw Exception(e.toString());
+    }
+  }
+
   Future<bool> updateReward(
     int id, {
     String? title,

@@ -19,6 +19,9 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<RewardProvider>().loadAll();
     });
@@ -28,6 +31,64 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  void _showSuggestRewardModal() {
+    final titleController = TextEditingController();
+    final descController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom, left: 16, right: 16, top: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text('Đề xuất quà tặng', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+            const SizedBox(height: 8),
+            const Text('Gia đình cần có gói Premium để sử dụng tính năng này.', style: TextStyle(fontSize: 12, color: AppColors.textHint), textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+            TextField(
+              controller: titleController,
+              decoration: InputDecoration(
+                labelText: 'Món quà con muốn',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: descController,
+              decoration: InputDecoration(
+                labelText: 'Mô tả (không bắt buộc)',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              maxLines: 2,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14)),
+              onPressed: () async {
+                final title = titleController.text.trim();
+                if (title.isEmpty) return;
+
+                Navigator.pop(ctx);
+                try {
+                  await context.read<RewardProvider>().suggestReward(title: title, description: descController.text.trim());
+                  if (mounted) UIHelpers.showMessageBox(context, 'Thành công', 'Đã gửi đề xuất! Vui lòng chờ bố mẹ thiết lập điểm cho món quà này.');
+                } catch (e) {
+                  if (mounted) UIHelpers.showMessageBox(context, 'Lỗi', e.toString(), isError: true);
+                }
+              },
+              child: const Text('Gửi đề xuất'),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showRedeemConfirm(Reward reward, int currentPoints) {
@@ -116,6 +177,13 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
           );
         },
       ),
+      floatingActionButton: _tabController.index == 0
+          ? FloatingActionButton(
+              onPressed: _showSuggestRewardModal,
+              backgroundColor: AppColors.primary,
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
     );
   }
 
@@ -137,19 +205,20 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
         itemBuilder: (context, index) {
           final reward = provider.rewards[index];
           final canAfford = currentPoints >= reward.requiredPoints;
+          final isSuggested = reward.isSuggested;
 
           return Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             elevation: 2,
             child: InkWell(
               borderRadius: BorderRadius.circular(16),
-              onTap: () => _showRedeemConfirm(reward, currentPoints),
+              onTap: isSuggested ? null : () => _showRedeemConfirm(reward, currentPoints),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.card_giftcard, size: 40, color: canAfford ? AppColors.primary : Colors.grey),
+                    Icon(Icons.card_giftcard, size: 40, color: (canAfford && !isSuggested) ? AppColors.primary : Colors.grey),
                     const SizedBox(height: 12),
                     Text(
                       reward.title, 
@@ -159,22 +228,32 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
                       overflow: TextOverflow.ellipsis,
                     ),
                     const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: canAfford ? AppColors.pending.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.stars, size: 14, color: canAfford ? AppColors.pending : Colors.grey),
-                          const SizedBox(width: 4),
-                          Text('${reward.requiredPoints}', 
-                            style: TextStyle(color: canAfford ? AppColors.pending : Colors.grey, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    )
+                    if (isSuggested)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.textHint.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text('Đang chờ điểm', style: TextStyle(color: AppColors.textHint, fontSize: 12, fontWeight: FontWeight.bold)),
+                      )
+                    else
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: canAfford ? AppColors.pending.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.stars, size: 14, color: canAfford ? AppColors.pending : Colors.grey),
+                            const SizedBox(width: 4),
+                            Text('${reward.requiredPoints}', 
+                              style: TextStyle(color: canAfford ? AppColors.pending : Colors.grey, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      )
                   ],
                 ),
               ),
