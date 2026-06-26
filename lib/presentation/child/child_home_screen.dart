@@ -359,18 +359,6 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
                             Navigator.push(context, MaterialPageRoute(builder: (_) => const LeaderboardScreen()));
                           },
                         ),
-                        _CategoryItem(
-                          icon: Icons.shopping_cart_rounded,
-                          label: 'Mua sắm',
-                          color: AppColors.accent,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const ShoppingListScreen()),
-                            );
-                          },
-                        ),
                       ],
                     ),
                   ),
