@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +17,8 @@ class MyTasksScreen extends StatefulWidget {
   State<MyTasksScreen> createState() => _MyTasksScreenState();
 }
 
-class _MyTasksScreenState extends State<MyTasksScreen> with SingleTickerProviderStateMixin {
+class _MyTasksScreenState extends State<MyTasksScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -36,7 +36,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     final taskProvider = context.watch<TaskProvider>();
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Nhiệm vụ của tôi'),
@@ -47,8 +47,10 @@ class _MyTasksScreenState extends State<MyTasksScreen> with SingleTickerProvider
             borderSide: BorderSide(width: 4, color: AppColors.secondary),
             insets: EdgeInsets.symmetric(horizontal: 48),
           ),
-          labelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, fontFamily: 'Outfit'),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, fontFamily: 'Outfit'),
+          labelStyle: const TextStyle(
+              fontWeight: FontWeight.w900, fontSize: 14, fontFamily: 'Outfit'),
+          unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w600, fontSize: 14, fontFamily: 'Outfit'),
           labelColor: AppColors.textPrimary,
           unselectedLabelColor: AppColors.textHint,
           tabs: const [
@@ -94,7 +96,10 @@ class _TaskList extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             const Text('Chưa có nhiệm vụ nào ở đây',
-                style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600, fontSize: 16)),
+                style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16)),
             const SizedBox(height: 8),
             const Text('Nghỉ ngơi thôi nào! 😊',
                 style: TextStyle(color: AppColors.textHint, fontSize: 14)),
@@ -108,7 +113,8 @@ class _TaskList extends StatelessWidget {
       itemCount: tasks.length,
       itemBuilder: (context, index) {
         final task = tasks[index];
-        final canSubmit = task.isPending || task.isInProgress || task.isRejected;
+        final canSubmit =
+            task.isPending || task.isInProgress || task.isRejected;
 
         return Container(
           margin: const EdgeInsets.only(bottom: 20),
@@ -123,7 +129,9 @@ class _TaskList extends StatelessWidget {
               ),
             ],
             border: Border.all(
-              color: task.isRejected ? AppColors.rejected.withOpacity(0.3) : Colors.black.withOpacity(0.05),
+              color: task.isRejected
+                  ? AppColors.rejected.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.05),
               width: task.isRejected ? 1.5 : 1,
             ),
           ),
@@ -135,14 +143,21 @@ class _TaskList extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: 52, height: 52,
+                      width: 52,
+                      height: 52,
                       decoration: BoxDecoration(
-                        color: task.isApproved ? AppColors.approved.withOpacity(0.1) : const Color(0xFFF2F2F7),
+                        color: task.isApproved
+                            ? AppColors.approved.withOpacity(0.1)
+                            : const Color(0xFFF2F2F7),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Icon(
-                        task.isApproved ? Icons.verified_rounded : Icons.assignment_rounded,
-                        color: task.isApproved ? AppColors.approved : AppColors.secondary,
+                        task.isApproved
+                            ? Icons.verified_rounded
+                            : Icons.assignment_rounded,
+                        color: task.isApproved
+                            ? AppColors.approved
+                            : AppColors.secondary,
                         size: 26,
                       ),
                     ),
@@ -151,21 +166,34 @@ class _TaskList extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(task.title, 
-                              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: AppColors.textPrimary)),
+                          Text(task.title,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 18,
+                                  color: AppColors.textPrimary)),
                           const SizedBox(height: 4),
-                          Text(task.description ?? 'Nhiệm vụ không có mô tả cụ thể.',
-                              style: const TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.4)),
+                          Text(
+                              task.description ??
+                                  'Nhiệm vụ không có mô tả cụ thể.',
+                              style: const TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                  height: 1.4)),
                           if (task.dueDate != null)
                             Padding(
                               padding: const EdgeInsets.only(top: 12),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.timer_outlined, size: 14, color: AppColors.secondary),
+                                  const Icon(Icons.timer_outlined,
+                                      size: 14, color: AppColors.secondary),
                                   const SizedBox(width: 6),
                                   Text(
-                                    DateFormat('HH:mm, dd/MM/yyyy').format(task.dueDate!),
-                                    style: const TextStyle(fontSize: 12, color: AppColors.secondary, fontWeight: FontWeight.w700),
+                                    DateFormat('HH:mm, dd/MM/yyyy')
+                                        .format(task.dueDate!),
+                                    style: const TextStyle(
+                                        fontSize: 12,
+                                        color: AppColors.secondary,
+                                        fontWeight: FontWeight.w700),
                                   ),
                                 ],
                               ),
@@ -177,16 +205,21 @@ class _TaskList extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: AppColors.rejected.withOpacity(0.05),
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: AppColors.rejected.withOpacity(0.2)),
+                                border: Border.all(
+                                    color: AppColors.rejected.withOpacity(0.2)),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.warning_amber_rounded, size: 18, color: AppColors.rejected),
+                                  const Icon(Icons.warning_amber_rounded,
+                                      size: 18, color: AppColors.rejected),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
                                       'Cần sửa: ${task.rejectionNote}',
-                                      style: const TextStyle(fontSize: 13, color: AppColors.rejected, fontWeight: FontWeight.w600),
+                                      style: const TextStyle(
+                                          fontSize: 13,
+                                          color: AppColors.rejected,
+                                          fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                 ],
@@ -215,16 +248,22 @@ class _TaskList extends StatelessWidget {
                       )
                     else if (task.isSubmitted)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           color: AppColors.secondary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Row(
                           children: [
-                            Icon(Icons.hourglass_bottom_rounded, size: 16, color: AppColors.secondary),
+                            Icon(Icons.hourglass_bottom_rounded,
+                                size: 16, color: AppColors.secondary),
                             SizedBox(width: 8),
-                            Text('Chờ duyệt...', style: TextStyle(color: AppColors.secondary, fontWeight: FontWeight.w900, fontSize: 13)),
+                            Text('Chờ duyệt...',
+                                style: TextStyle(
+                                    color: AppColors.secondary,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 13)),
                           ],
                         ),
                       )
@@ -245,7 +284,8 @@ class _TaskList extends StatelessWidget {
 
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => SafeArea(
         child: Wrap(
           children: [
@@ -268,7 +308,8 @@ class _TaskList extends StatelessWidget {
 
     List<XFile> selectedImages = [];
     if (source == ImageSource.camera) {
-      final image = await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+      final image =
+          await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
       if (image != null) selectedImages.add(image);
     } else {
       final images = await picker.pickMultiImage(imageQuality: 80);
@@ -303,15 +344,19 @@ class _TaskList extends StatelessWidget {
         fileNames.add(img.name);
       }
 
-      final success = await context.read<TaskProvider>().submitTask(taskId, null, bytesList, fileNames);
+      final success = await context
+          .read<TaskProvider>()
+          .submitTask(taskId, null, bytesList, fileNames);
 
       if (!context.mounted) return;
       Navigator.of(context, rootNavigator: true).pop(); // Đóng dialog loading
 
       if (success) {
-        UIHelpers.showMessageBox(context, 'Thành công', 'Đã gửi ảnh thành công!');
+        UIHelpers.showMessageBox(
+            context, 'Thành công', 'Đã gửi ảnh thành công!');
       } else {
-        UIHelpers.showMessageBox(context, 'Lỗi', 'Có lỗi xảy ra khi gửi ảnh.', isError: true);
+        UIHelpers.showMessageBox(context, 'Lỗi', 'Có lỗi xảy ra khi gửi ảnh.',
+            isError: true);
       }
     }
   }

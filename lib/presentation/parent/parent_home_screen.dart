@@ -9,12 +9,12 @@ import '../../shared/widgets/widgets.dart';
 import 'task_list_screen.dart';
 import 'create_task_screen.dart';
 import 'parent_rewards_screen.dart';
-import '../subscription/subscription_screen.dart';
+
 import '../shared/notification_screen.dart';
 import '../../core/utils/ui_helpers.dart';
 import '../shared/family_calendar_screen.dart';
-import '../shared/meal_suggestion_screen.dart';
-import '../shared/food_preference_screen.dart';
+
+
 
 class ParentHomeScreen extends StatefulWidget {
   final Function(int)? onNavigate;

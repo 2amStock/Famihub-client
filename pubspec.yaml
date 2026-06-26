@@ -3,7 +3,7 @@ description: FamiHub - Ứng dụng quản lý gia đình
 
 publish_to: 'none'
 
-version: 1.0.5+7
+version: 1.0.6+8
 
 
 environment:
@@ -15,6 +15,7 @@ dependencies:
 
   # HTTP
   dio: ^5.4.0
+  http: ^1.2.0
 
   # Storage
   flutter_secure_storage: ^9.0.0

@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/providers.dart';
 import '../../data/models/notification_model.dart';
-import '../../shared/widgets/widgets.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -27,13 +26,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<NotificationProvider>();
-    final notifications = _showUnreadOnly 
+    final notifications = _showUnreadOnly
         ? provider.notifications.where((n) => !n.isRead).toList()
         : provider.notifications;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thông báo', style: TextStyle(fontWeight: FontWeight.w900)),
+        title: const Text('Thông báo',
+            style: TextStyle(fontWeight: FontWeight.w900)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -42,10 +42,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
             child: DropdownButton<bool>(
               value: _showUnreadOnly,
               underline: const SizedBox(),
-              icon: const Icon(Icons.filter_list_rounded, color: AppColors.primary),
+              icon: const Icon(Icons.filter_list_rounded,
+                  color: AppColors.primary),
               items: const [
-                DropdownMenuItem(value: false, child: Text('Tất cả', style: TextStyle(fontSize: 14))),
-                DropdownMenuItem(value: true, child: Text('Chưa đọc', style: TextStyle(fontSize: 14))),
+                DropdownMenuItem(
+                    value: false,
+                    child: Text('Tất cả', style: TextStyle(fontSize: 14))),
+                DropdownMenuItem(
+                    value: true,
+                    child: Text('Chưa đọc', style: TextStyle(fontSize: 14))),
               ],
               onChanged: (val) {
                 if (val != null) setState(() => _showUnreadOnly = val);
@@ -54,7 +59,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
           ),
           if (provider.notifications.isNotEmpty && provider.unreadCount > 0)
             IconButton(
-              icon: const Icon(Icons.done_all_rounded, color: AppColors.primary),
+              icon:
+                  const Icon(Icons.done_all_rounded, color: AppColors.primary),
               tooltip: 'Đánh dấu tất cả đã đọc',
               onPressed: () {
                 provider.markAllAsRead();
@@ -65,16 +71,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
       body: Container(
         decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
         child: provider.loading && notifications.isEmpty
-            ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColors.primary))
             : notifications.isEmpty
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.notifications_off_rounded, size: 80, color: AppColors.textHint),
+                        const Icon(Icons.notifications_off_rounded,
+                            size: 80, color: AppColors.textHint),
                         const SizedBox(height: 16),
                         const Text('Bạn chưa có thông báo nào',
-                            style: TextStyle(color: AppColors.textHint, fontSize: 16)),
+                            style: TextStyle(
+                                color: AppColors.textHint, fontSize: 16)),
                       ],
                     ),
                   )
@@ -84,7 +93,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     child: ListView.separated(
                       padding: const EdgeInsets.all(20),
                       itemCount: notifications.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 12),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         final n = notifications[index];
                         return _NotificationCard(notification: n);
@@ -144,7 +154,9 @@ class _NotificationCard extends StatelessWidget {
           color: isUnread ? Colors.white : const Color(0xFFF9F9FB),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isUnread ? AppColors.primary.withOpacity(0.3) : Colors.transparent,
+            color: isUnread
+                ? AppColors.primary.withOpacity(0.3)
+                : Colors.transparent,
             width: isUnread ? 1.5 : 0,
           ),
           boxShadow: isUnread
@@ -180,7 +192,8 @@ class _NotificationCard extends StatelessWidget {
                         child: Text(
                           notification.title,
                           style: TextStyle(
-                            fontWeight: isUnread ? FontWeight.w900 : FontWeight.w700,
+                            fontWeight:
+                                isUnread ? FontWeight.w900 : FontWeight.w700,
                             fontSize: 16,
                             color: AppColors.textPrimary,
                           ),
@@ -201,7 +214,9 @@ class _NotificationCard extends StatelessWidget {
                   Text(
                     notification.message,
                     style: TextStyle(
-                      color: isUnread ? AppColors.textPrimary : AppColors.textSecondary,
+                      color: isUnread
+                          ? AppColors.textPrimary
+                          : AppColors.textSecondary,
                       fontSize: 14,
                       height: 1.4,
                     ),
