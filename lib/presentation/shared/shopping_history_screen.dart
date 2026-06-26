@@ -4,8 +4,10 @@ import '../../data/services/shopping_service.dart';
 import 'package:intl/intl.dart';
 
 class ShoppingHistoryScreen extends StatefulWidget {
+  const ShoppingHistoryScreen({super.key});
+
   @override
-  _ShoppingHistoryScreenState createState() => _ShoppingHistoryScreenState();
+  State<ShoppingHistoryScreen> createState() => _ShoppingHistoryScreenState();
 }
 
 class _ShoppingHistoryScreenState extends State<ShoppingHistoryScreen> {
@@ -41,8 +43,8 @@ class _ShoppingHistoryScreenState extends State<ShoppingHistoryScreen> {
               final boughtItems = list.items.where((i) => i.isBought).length;
 
               return ExpansionTile(
-                title: Text("Danh sách ngày \$dateStr"),
-                subtitle: Text("Hoàn thành \$boughtItems/\$totalItems món"),
+                title: Text("Danh sách ngày $dateStr"),
+                subtitle: Text("Hoàn thành $boughtItems/$totalItems món"),
                 children: list.items.map((item) {
                   return ListTile(
                     leading: Icon(
@@ -50,7 +52,7 @@ class _ShoppingHistoryScreenState extends State<ShoppingHistoryScreen> {
                       color: item.isBought ? Colors.green : Colors.grey,
                     ),
                     title: Text(
-                      "\${item.name} (\${item.quantity})",
+                      "${item.name} (${item.quantity})",
                       style: TextStyle(
                         decoration: item.isBought ? TextDecoration.lineThrough : null,
                         color: item.isBought ? Colors.grey : Colors.black,

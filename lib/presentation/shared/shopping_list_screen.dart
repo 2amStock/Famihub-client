@@ -5,8 +5,10 @@ import '../../data/models/shopping_model.dart';
 import 'shopping_history_screen.dart';
 
 class ShoppingListScreen extends StatefulWidget {
+  const ShoppingListScreen({super.key});
+
   @override
-  _ShoppingListScreenState createState() => _ShoppingListScreenState();
+  State<ShoppingListScreen> createState() => _ShoppingListScreenState();
 }
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {

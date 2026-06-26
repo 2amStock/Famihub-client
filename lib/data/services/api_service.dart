@@ -8,6 +8,16 @@ class ApiService {
   late final Dio _dio;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
+  String get baseUrl => _dio.options.baseUrl;
+
+  Future<Map<String, String>> getAuthHeaders() async {
+    final token = await getToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
+
   ApiService() {
     _dio = Dio(BaseOptions(
       baseUrl: ApiConstants.apiUrl,

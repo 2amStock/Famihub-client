@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/shopping_model.dart';
-import 'api_service.dart'; // Giả định dùng chung baseUrl, auth
+import 'api_service.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:flutter/foundation.dart';
 
 class ShoppingService extends ChangeNotifier {
   final ApiService apiService;
   HubConnection? _hubConnection;
-  
+
   ShoppingList? activeList;
   List<ShoppingList> archivedLists = [];
   bool isLoading = false;
@@ -17,26 +17,27 @@ class ShoppingService extends ChangeNotifier {
   ShoppingService({required this.apiService});
 
   String get _baseUrl => apiService.baseUrl;
-  Map<String, String> get _headers => apiService.headers; // Giả định apiService có getter headers
 
   Future<void> initSignalR() async {
     final token = await apiService.getToken(); // Giả định
     if (token == null) return;
 
-    final url = "\$_baseUrl/shoppingHub"; // Giả sử \$_baseUrl bỏ đi /api
     final baseUrlObj = Uri.parse(_baseUrl);
-    final hubUrl = "\${baseUrlObj.scheme}://\${baseUrlObj.host}:\${baseUrlObj.port}/shoppingHub";
+    final hubUrl =
+        "${baseUrlObj.scheme}://${baseUrlObj.host}:${baseUrlObj.port}/shoppingHub";
 
     _hubConnection = HubConnectionBuilder()
-        .withUrl(hubUrl, options: HttpConnectionOptions(
-          accessTokenFactory: () async => token,
-        ))
+        .withUrl(hubUrl,
+            options: HttpConnectionOptions(
+              accessTokenFactory: () async => token,
+            ))
         .withAutomaticReconnect()
         .build();
 
     _hubConnection?.on('ShoppingItemAdded', (arguments) {
       if (arguments != null && arguments.isNotEmpty) {
-        final item = ShoppingItem.fromJson(arguments[0] as Map<String, dynamic>);
+        final item =
+            ShoppingItem.fromJson(arguments[0] as Map<String, dynamic>);
         if (activeList != null) {
           activeList!.items.add(item);
           notifyListeners();
@@ -46,9 +47,11 @@ class ShoppingService extends ChangeNotifier {
 
     _hubConnection?.on('ShoppingItemUpdated', (arguments) {
       if (arguments != null && arguments.isNotEmpty) {
-        final updatedItem = ShoppingItem.fromJson(arguments[0] as Map<String, dynamic>);
+        final updatedItem =
+            ShoppingItem.fromJson(arguments[0] as Map<String, dynamic>);
         if (activeList != null) {
-          final index = activeList!.items.indexWhere((i) => i.id == updatedItem.id);
+          final index =
+              activeList!.items.indexWhere((i) => i.id == updatedItem.id);
           if (index != -1) {
             activeList!.items[index] = updatedItem;
             notifyListeners();
@@ -68,7 +71,7 @@ class ShoppingService extends ChangeNotifier {
     });
 
     _hubConnection?.on('ShoppingListArchived', (arguments) {
-       loadActiveList();
+      loadActiveList();
     });
 
     await _hubConnection?.start();
@@ -84,13 +87,15 @@ class ShoppingService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await http.get(Uri.parse('\$_baseUrl/shoppinglists/active'), headers: _headers);
+      final headers = await apiService.getAuthHeaders();
+      final response = await http
+          .get(Uri.parse('$_baseUrl/shoppinglists/active'), headers: headers);
       if (response.statusCode == 200) {
         activeList = ShoppingList.fromJson(json.decode(response.body));
       } else if (response.statusCode == 403) {
         error = "Gói cước của bạn không hỗ trợ tính năng này.";
       } else {
-        error = "Có lỗi xảy ra: \${response.statusCode}";
+        error = "Có lỗi xảy ra: ${response.statusCode}";
       }
     } catch (e) {
       error = e.toString();
@@ -106,12 +111,16 @@ class ShoppingService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await http.get(Uri.parse('\$_baseUrl/shoppinglists/archived'), headers: _headers);
+      final headers = await apiService.getAuthHeaders();
+      final response = await http.get(
+          Uri.parse('$_baseUrl/shoppinglists/archived'),
+          headers: headers);
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        archivedLists = data.map((json) => ShoppingList.fromJson(json)).toList();
+        archivedLists =
+            data.map((json) => ShoppingList.fromJson(json)).toList();
       } else {
-        error = "Có lỗi xảy ra: \${response.statusCode}";
+        error = "Có lỗi xảy ra: ${response.statusCode}";
       }
     } catch (e) {
       error = e.toString();
@@ -123,9 +132,10 @@ class ShoppingService extends ChangeNotifier {
 
   Future<void> addItem(String name, double quantity, String? unit) async {
     try {
+      final headers = await apiService.getAuthHeaders();
       final response = await http.post(
-        Uri.parse('\$_baseUrl/shoppinglists/items'),
-        headers: _headers,
+        Uri.parse('$_baseUrl/shoppinglists/items'),
+        headers: headers,
         body: json.encode({
           'name': name,
           'quantity': quantity,
@@ -139,55 +149,59 @@ class ShoppingService extends ChangeNotifier {
         // notifyListeners();
       }
     } catch (e) {
-      print("Error adding item: \$e");
+      print("Error adding item: $e");
     }
   }
 
   Future<void> toggleItemBought(int id, bool isBought) async {
     try {
+      final headers = await apiService.getAuthHeaders();
       await http.put(
-        Uri.parse('\$_baseUrl/shoppinglists/items/\$id'),
-        headers: _headers,
+        Uri.parse('$_baseUrl/shoppinglists/items/$id'),
+        headers: headers,
         body: json.encode({'isBought': isBought}),
       );
     } catch (e) {
-      print("Error updating item: \$e");
+      print("Error updating item: $e");
     }
   }
 
   Future<void> deleteItem(int id) async {
     try {
+      final headers = await apiService.getAuthHeaders();
       await http.delete(
-        Uri.parse('\$_baseUrl/shoppinglists/items/\$id'),
-        headers: _headers,
+        Uri.parse('$_baseUrl/shoppinglists/items/$id'),
+        headers: headers,
       );
     } catch (e) {
-      print("Error deleting item: \$e");
+      print("Error deleting item: $e");
     }
   }
 
   Future<void> archiveList() async {
     try {
+      final headers = await apiService.getAuthHeaders();
       final response = await http.post(
-        Uri.parse('\$_baseUrl/shoppinglists/archive'),
-        headers: _headers,
+        Uri.parse('$_baseUrl/shoppinglists/archive'),
+        headers: headers,
       );
       if (response.statusCode == 200) {
-         await loadActiveList();
+        await loadActiveList();
       } else {
-         error = "Bạn không có quyền chốt danh sách.";
-         notifyListeners();
+        error = "Bạn không có quyền chốt danh sách.";
+        notifyListeners();
       }
     } catch (e) {
-      print("Error archiving list: \$e");
+      print("Error archiving list: $e");
     }
   }
 
   Future<void> addMealToShoppingList(int mealId) async {
     try {
+      final headers = await apiService.getAuthHeaders();
       final response = await http.post(
-        Uri.parse('\$_baseUrl/meals/\$mealId/add-to-shopping-list'),
-        headers: _headers,
+        Uri.parse('$_baseUrl/meals/$mealId/add-to-shopping-list'),
+        headers: headers,
       );
       if (response.statusCode == 200) {
         // Success
