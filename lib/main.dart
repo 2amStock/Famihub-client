@@ -8,9 +8,8 @@ import 'data/services/api_service.dart';
 import 'presentation/auth/onboarding_screen.dart';
 import 'presentation/parent/parent_main_screen.dart';
 import 'presentation/child/child_main_screen.dart';
-
-
 import 'data/services/fcm_service.dart' as data_services;
+import 'data/services/shopping_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +33,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => MealSuggestionProvider(apiService)),
         ChangeNotifierProvider(create: (_) => NotificationProvider(apiService)),
         ChangeNotifierProvider(create: (_) => LeaderboardProvider(apiService)),
+        ChangeNotifierProvider(create: (_) => ShoppingService(apiService: apiService)),
       ],
       child: const FamiHubApp(),
     ),

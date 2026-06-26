@@ -192,6 +192,7 @@ class Reward {
   final String title;
   final String? description;
   final int requiredPoints;
+  final bool isSuggested;
   final DateTime createdAt;
   final AppUser? createdBy;
 
@@ -200,6 +201,7 @@ class Reward {
     required this.title,
     this.description,
     required this.requiredPoints,
+    this.isSuggested = false,
     required this.createdAt,
     this.createdBy,
   });
@@ -209,6 +211,7 @@ class Reward {
         title: json['title'],
         description: json['description'],
         requiredPoints: json['requiredPoints'],
+        isSuggested: json['isSuggested'] ?? false,
         createdAt: DateTime.parse(json['createdAt']).toLocal(),
         createdBy: json['createdBy'] != null ? AppUser.fromJson(json['createdBy']) : null,
       );

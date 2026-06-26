@@ -10,6 +10,7 @@ import 'child_rewards_screen.dart';
 import '../../core/utils/ui_helpers.dart';
 import '../shared/family_calendar_screen.dart';
 import 'leaderboard_screen.dart';
+import '../shared/shopping_list_screen.dart';
 
 class ChildHomeScreen extends StatefulWidget {
   final Function(int)? onNavigate;
@@ -301,8 +302,9 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      runSpacing: 20,
                       children: [
                         _CategoryItem(
                           icon: Icons.task_alt_rounded,

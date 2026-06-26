@@ -259,6 +259,21 @@ class ApiService {
     return Reward.fromJson(res.data);
   }
 
+  Future<Reward> suggestReward(String title, String? description) async {
+    try {
+      final res = await _dio.post('/Rewards/suggest', data: {
+        'title': title,
+        'description': description,
+      });
+      return Reward.fromJson(res.data);
+    } on DioException catch (e) {
+      if (e.response?.data != null && e.response?.data['message'] != null) {
+        throw Exception(e.response?.data['message']);
+      }
+      rethrow;
+    }
+  }
+
   Future<Reward> updateReward(int id,
       {String? title, String? description, int? requiredPoints}) async {
     final Map<String, dynamic> body = {};

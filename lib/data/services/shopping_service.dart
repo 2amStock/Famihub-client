@@ -143,10 +143,9 @@ class ShoppingService extends ChangeNotifier {
         }),
       );
       if (response.statusCode == 200) {
-        // SignalR will handle UI update if connected, but we can do it manually too
-        // final newItem = ShoppingItem.fromJson(json.decode(response.body));
-        // activeList?.items.add(newItem);
-        // notifyListeners();
+        final newItem = ShoppingItem.fromJson(json.decode(response.body));
+        activeList?.items.add(newItem);
+        notifyListeners();
       }
     } catch (e) {
       print("Error adding item: $e");
@@ -154,6 +153,23 @@ class ShoppingService extends ChangeNotifier {
   }
 
   Future<void> toggleItemBought(int id, bool isBought) async {
+    // Optimistic update
+    final index = activeList?.items.indexWhere((i) => i.id == id) ?? -1;
+    if (index != -1) {
+      final oldItem = activeList!.items[index];
+      activeList!.items[index] = ShoppingItem(
+        id: oldItem.id,
+        listId: oldItem.listId,
+        name: oldItem.name,
+        quantity: oldItem.quantity,
+        unit: oldItem.unit,
+        isBought: isBought,
+        buyerId: oldItem.buyerId,
+        createdByUserId: oldItem.createdByUserId,
+        createdAt: oldItem.createdAt,
+      );
+      notifyListeners();
+    }
     try {
       final headers = await apiService.getAuthHeaders();
       await http.put(
@@ -162,11 +178,37 @@ class ShoppingService extends ChangeNotifier {
         body: json.encode({'isBought': isBought}),
       );
     } catch (e) {
+      // Rollback on error
+      if (index != -1) {
+        final rollbackItem = activeList!.items[index];
+        activeList!.items[index] = ShoppingItem(
+          id: rollbackItem.id,
+          listId: rollbackItem.listId,
+          name: rollbackItem.name,
+          quantity: rollbackItem.quantity,
+          unit: rollbackItem.unit,
+          isBought: !isBought,
+          buyerId: rollbackItem.buyerId,
+          createdByUserId: rollbackItem.createdByUserId,
+          createdAt: rollbackItem.createdAt,
+        );
+        notifyListeners();
+      }
       print("Error updating item: $e");
     }
   }
 
   Future<void> deleteItem(int id) async {
+    // Optimistic delete
+    ShoppingItem? removedItem;
+    int removedIndex = -1;
+    if (activeList != null) {
+      removedIndex = activeList!.items.indexWhere((i) => i.id == id);
+      if (removedIndex != -1) {
+        removedItem = activeList!.items.removeAt(removedIndex);
+        notifyListeners();
+      }
+    }
     try {
       final headers = await apiService.getAuthHeaders();
       await http.delete(
@@ -174,6 +216,11 @@ class ShoppingService extends ChangeNotifier {
         headers: headers,
       );
     } catch (e) {
+      // Rollback on error
+      if (removedItem != null && removedIndex != -1 && activeList != null) {
+        activeList!.items.insert(removedIndex, removedItem);
+        notifyListeners();
+      }
       print("Error deleting item: $e");
     }
   }

@@ -262,6 +262,9 @@ class _ParentRewardsScreenState extends State<ParentRewardsScreen> with SingleTi
         itemBuilder: (context, index) {
           final reward = provider.rewards[index];
           final isSystem = reward.createdBy == null;
+          final isSuggested = reward.isSuggested;
+          final creatorName = reward.createdBy?.name ?? '';
+
           return Card(
             margin: const EdgeInsets.only(bottom: 12),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -269,10 +272,20 @@ class _ParentRewardsScreenState extends State<ParentRewardsScreen> with SingleTi
               contentPadding: const EdgeInsets.all(16),
               leading: Container(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), shape: BoxShape.circle),
-                child: const Icon(Icons.card_giftcard, color: AppColors.primary),
+                decoration: BoxDecoration(color: isSuggested ? AppColors.pending.withOpacity(0.1) : AppColors.primary.withOpacity(0.1), shape: BoxShape.circle),
+                child: Icon(isSuggested ? Icons.volunteer_activism : Icons.card_giftcard, color: isSuggested ? AppColors.pending : AppColors.primary),
               ),
-              title: Text(reward.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+              title: Row(
+                children: [
+                  Expanded(child: Text(reward.title, style: const TextStyle(fontWeight: FontWeight.bold))),
+                  if (isSuggested)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(color: AppColors.pending.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
+                      child: const Text('Đề xuất', style: TextStyle(fontSize: 10, color: AppColors.pending, fontWeight: FontWeight.bold)),
+                    )
+                ],
+              ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -285,7 +298,7 @@ class _ParentRewardsScreenState extends State<ParentRewardsScreen> with SingleTi
                     children: [
                       const Icon(Icons.stars, size: 16, color: AppColors.pending),
                       const SizedBox(width: 4),
-                      Text('${reward.requiredPoints} điểm', style: const TextStyle(color: AppColors.pending, fontWeight: FontWeight.bold)),
+                      Text(isSuggested ? 'Chưa thiết lập' : '${reward.requiredPoints} điểm', style: const TextStyle(color: AppColors.pending, fontWeight: FontWeight.bold)),
                       if (isSystem) ...[
                         const SizedBox(width: 8),
                         Container(
@@ -293,6 +306,9 @@ class _ParentRewardsScreenState extends State<ParentRewardsScreen> with SingleTi
                           decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(4)),
                           child: const Text('Hệ thống', style: TextStyle(fontSize: 10, color: Colors.grey)),
                         )
+                      ] else if (isSuggested) ...[
+                        const SizedBox(width: 8),
+                        Text('bởi $creatorName', style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic)),
                       ]
                     ],
                   ),
@@ -301,8 +317,8 @@ class _ParentRewardsScreenState extends State<ParentRewardsScreen> with SingleTi
               trailing: isSystem ? null : PopupMenuButton(
                 icon: const Icon(Icons.more_vert),
                 itemBuilder: (ctx) => [
-                  const PopupMenuItem(value: 'edit', child: Text('Sửa')),
-                  const PopupMenuItem(value: 'delete', child: Text('Xóa', style: TextStyle(color: AppColors.rejected))),
+                  PopupMenuItem(value: 'edit', child: Text(isSuggested ? 'Thiết lập điểm' : 'Sửa')),
+                  const PopupMenuItem(value: 'delete', child: Text('Từ chối / Xóa', style: TextStyle(color: AppColors.rejected))),
                 ],
                 onSelected: (val) {
                   if (val == 'edit') _showCreateEditDialog(reward: reward);
