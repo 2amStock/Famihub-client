@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/models.dart';
 import '../../data/providers/providers.dart';
+import '../../shared/widgets/widgets.dart';
+import '../../data/services/shopping_service.dart';
+import '../../core/utils/ui_helpers.dart';
 
 class MealSessionDetailScreen extends StatelessWidget {
   final MealSuggestionGroup session;
@@ -144,6 +147,26 @@ class _MealCardDetail extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(i, style: const TextStyle(fontSize: 14)),
                 )),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FamiButton(
+                text: 'Thêm vào danh sách mua sắm',
+                icon: Icons.add_shopping_cart_rounded,
+                onPressed: () async {
+                  try {
+                    await context.read<ShoppingService>().addMealToShoppingList(currentMeal.id);
+                    if (context.mounted) {
+                      UIHelpers.showMessageBox(context, 'Thành công', 'Đã thêm nguyên liệu vào danh sách mua sắm!');
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      UIHelpers.showMessageBox(context, 'Lỗi', 'Cần nâng cấp gói cước để sử dụng tính năng này', isError: true);
+                    }
+                  }
+                },
+              ),
+            ),
           ],
         ),
       ),

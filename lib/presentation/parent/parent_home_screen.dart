@@ -13,6 +13,7 @@ import 'parent_rewards_screen.dart';
 import '../shared/notification_screen.dart';
 import '../../core/utils/ui_helpers.dart';
 import '../shared/family_calendar_screen.dart';
+import '../shared/shopping_list_screen.dart';
 
 
 
@@ -312,7 +313,18 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                             );
                           },
                         ),
-
+                        _CategoryItem(
+                          icon: Icons.shopping_cart_rounded,
+                          label: 'Mua sắm',
+                          color: AppColors.accent,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const ShoppingListScreen()),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
