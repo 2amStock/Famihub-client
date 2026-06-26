@@ -137,7 +137,7 @@ class _ShoppingHistoryScreenState extends State<ShoppingHistoryScreen> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  '${item.name} (${item.quantity})',
+                                  '${item.name} (${item.quantity}${item.unit != null && item.unit!.isNotEmpty ? ' ${item.unit}' : ''})',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: item.isBought ? AppColors.textHint : AppColors.textPrimary,
