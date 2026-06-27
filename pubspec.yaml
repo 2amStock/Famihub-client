@@ -3,7 +3,7 @@ description: FamiHub - Ứng dụng quản lý gia đình
 
 publish_to: 'none'
 
-version: 1.0.6+8
+version: 2.0.1+10
 
 
 environment:
