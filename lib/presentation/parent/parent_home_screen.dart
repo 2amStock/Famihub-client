@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/providers/providers.dart';
 import '../../shared/widgets/widgets.dart';
@@ -77,7 +78,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: Colors.black.withOpacity(0.04)),
                           ),
-                          child: const Icon(Icons.calendar_today_rounded, size: 22, color: AppColors.textPrimary),
+                          child: Icon(LucideIcons.calendar, size: 22, color: AppColors.textPrimary),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -97,7 +98,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                           ),
                           child: Stack(
                             children: [
-                              const Icon(Icons.notifications_none_rounded, size: 22, color: AppColors.textPrimary),
+                              Icon(LucideIcons.bell, size: 22, color: AppColors.textPrimary),
                               if (context.watch<NotificationProvider>().unreadCount > 0)
                                 Positioned(
                                   right: 0,
@@ -163,7 +164,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                       decoration: InputDecoration(
                         hintText: 'Bạn cần tìm gì?',
                         hintStyle: const TextStyle(color: AppColors.textHint, fontSize: 15),
-                        prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textHint),
+                        prefixIcon: Icon(LucideIcons.search, color: AppColors.textHint),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
@@ -175,7 +176,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                             color: AppColors.primary,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.search_rounded, color: Colors.white, size: 18),
+                          child: Icon(LucideIcons.search, color: Colors.white, size: 18),
                         ),
                       ),
                     ),
@@ -193,7 +194,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                     physics: const BouncingScrollPhysics(),
                     children: [
                       _CategoryItem(
-                        icon: Icons.add_task_rounded,
+                        icon: LucideIcons.listPlus,
                         label: 'Giao việc',
                         color: AppColors.secondary,
                         onTap: () async {
@@ -206,7 +207,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                       ),
                       const SizedBox(width: 12),
                       _CategoryItem(
-                        icon: Icons.rate_review_rounded,
+                        icon: LucideIcons.checkSquare,
                         label: 'Duyệt việc',
                         color: AppColors.primary,
                         onTap: () {
@@ -220,7 +221,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                       ),
                       const SizedBox(width: 12),
                       _CategoryItem(
-                        icon: Icons.card_giftcard_rounded,
+                        icon: LucideIcons.gift,
                         label: 'Đổi thưởng',
                         color: AppColors.accent,
                         onTap: () {
@@ -232,7 +233,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                       ),
                       const SizedBox(width: 12),
                       _CategoryItem(
-                        icon: Icons.family_restroom_rounded,
+                        icon: LucideIcons.users,
                         label: 'Gia đình',
                         color: AppColors.inProgress,
                         onTap: () {
@@ -251,7 +252,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                       ),
                       const SizedBox(width: 12),
                       _CategoryItem(
-                        icon: Icons.shopping_cart_rounded,
+                        icon: LucideIcons.shoppingCart,
                         label: 'Mua sắm',
                         color: AppColors.textPrimary,
                         onTap: () {
@@ -336,7 +337,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                               color: const Color(0xFFF1F5F9),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.check_circle_outline_rounded,
+                            child: Icon(LucideIcons.checkCircle,
                                 size: 40, color: AppColors.textSecondary),
                           ),
                           const SizedBox(height: 24),
@@ -386,7 +387,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
           ? FamiButton(
               text: 'Giao việc mới',
               width: 180,
-              icon: Icons.add_rounded,
+              icon: LucideIcons.plus,
               onPressed: () async {
                 final result = await Navigator.push(
                   context,
@@ -428,7 +429,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                           color: AppColors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(Icons.rate_review_rounded,
+                        child: Icon(LucideIcons.checkSquare,
                             color: AppColors.primary, size: 24),
                       ),
                       const SizedBox(width: 16),
@@ -444,7 +445,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                       ),
                       IconButton(
                         onPressed: () => Navigator.pop(ctx),
-                        icon: const Icon(Icons.close_rounded, color: AppColors.textHint),
+                        icon: Icon(LucideIcons.x, color: AppColors.textHint),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                       ),
@@ -480,8 +481,8 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                                   errorWidget: (_, __, ___) => Container(
                                     height: 200,
                                     color: const Color(0xFFF1F5F9),
-                                    child: const Center(
-                                        child: Icon(Icons.broken_image_rounded, color: AppColors.textHint)),
+                                    child: Center(
+                                        child: Icon(LucideIcons.imageOff, color: AppColors.textHint)),
                                   ),
                                 ),
                               ],
@@ -493,7 +494,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.format_quote_rounded, size: 20, color: AppColors.textHint),
+                                  Icon(LucideIcons.quote, size: 20, color: AppColors.textHint),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
@@ -607,7 +608,7 @@ class _FamilySetupCardState extends State<_FamilySetupCard> {
                   color: const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.home_rounded, color: AppColors.textPrimary),
+                child: Icon(LucideIcons.home, color: AppColors.textPrimary),
               ),
               const SizedBox(width: 16),
               const Expanded(
@@ -671,7 +672,7 @@ class _FamilyInfoCard extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close_rounded, color: AppColors.textHint),
+                icon: Icon(LucideIcons.x, color: AppColors.textHint),
               ),
             ],
           ),
@@ -695,7 +696,7 @@ class _FamilyInfoCard extends StatelessWidget {
                     Clipboard.setData(ClipboardData(text: f.inviteCode));
                     UIHelpers.showMessageBox(context, 'Thành công', 'Đã sao chép: ${f.inviteCode}');
                   },
-                  icon: const Icon(Icons.copy_rounded, size: 20),
+                  icon: Icon(LucideIcons.copy, size: 20),
                 ),
               ],
             ),
@@ -898,3 +899,6 @@ class _ScaleOnTapState extends State<_ScaleOnTap> with SingleTickerProviderState
     );
   }
 }
+
+
+

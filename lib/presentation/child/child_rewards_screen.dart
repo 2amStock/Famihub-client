@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/models.dart';
 import '../../data/providers/providers.dart';
@@ -147,7 +148,7 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
             ),
             child: Row(
               children: [
-                const Icon(Icons.stars, color: AppColors.pending, size: 18),
+                Icon(LucideIcons.star, color: AppColors.pending, size: 18),
                 const SizedBox(width: 4),
                 Text('${user?.points ?? 0}', style: const TextStyle(color: AppColors.pending, fontWeight: FontWeight.bold)),
               ],
@@ -181,7 +182,7 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
           ? FloatingActionButton(
               onPressed: _showSuggestRewardModal,
               backgroundColor: AppColors.primary,
-              child: const Icon(Icons.add, color: Colors.white),
+              child: Icon(LucideIcons.plus, color: Colors.white),
             )
           : null,
     );
@@ -218,7 +219,7 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.card_giftcard, size: 40, color: (canAfford && !isSuggested) ? AppColors.primary : Colors.grey),
+                    Icon(LucideIcons.gift, size: 40, color: (canAfford && !isSuggested) ? AppColors.primary : Colors.grey),
                     const SizedBox(height: 12),
                     Text(
                       reward.title, 
@@ -247,7 +248,7 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.stars, size: 14, color: canAfford ? AppColors.pending : Colors.grey),
+                            Icon(LucideIcons.star, size: 14, color: canAfford ? AppColors.pending : Colors.grey),
                             const SizedBox(width: 4),
                             Text('${reward.requiredPoints}', 
                               style: TextStyle(color: canAfford ? AppColors.pending : Colors.grey, fontWeight: FontWeight.bold)),
@@ -283,7 +284,7 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
               leading: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: const BoxDecoration(color: AppColors.background, shape: BoxShape.circle),
-                child: const Icon(Icons.redeem, color: AppColors.textHint),
+                child: Icon(LucideIcons.tag, color: AppColors.textHint),
               ),
               title: Text(req.rewardTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Column(
@@ -325,3 +326,6 @@ class _ChildRewardsScreenState extends State<ChildRewardsScreen> with SingleTick
     );
   }
 }
+
+
+
