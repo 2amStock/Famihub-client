@@ -1,8 +1,9 @@
-import 'dart:typed_data';
+﻿import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/models.dart';
 import '../../data/providers/providers.dart';
@@ -153,8 +154,8 @@ class _TaskList extends StatelessWidget {
                       ),
                       child: Icon(
                         task.isApproved
-                            ? Icons.verified_rounded
-                            : Icons.assignment_rounded,
+                            ? LucideIcons.checkCircle
+                            : LucideIcons.clipboardList,
                         color: task.isApproved
                             ? AppColors.approved
                             : AppColors.secondary,
@@ -184,7 +185,7 @@ class _TaskList extends StatelessWidget {
                               padding: const EdgeInsets.only(top: 12),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.timer_outlined,
+                                  Icon(LucideIcons.clock,
                                       size: 14, color: AppColors.secondary),
                                   const SizedBox(width: 6),
                                   Text(
@@ -210,7 +211,7 @@ class _TaskList extends StatelessWidget {
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.warning_amber_rounded,
+                                  Icon(LucideIcons.alertTriangle,
                                       size: 18, color: AppColors.rejected),
                                   const SizedBox(width: 10),
                                   Expanded(
@@ -241,7 +242,7 @@ class _TaskList extends StatelessWidget {
                     if (canSubmit)
                       FamiButton(
                         text: task.isRejected ? 'Chụp lại' : 'Chụp ảnh',
-                        icon: Icons.camera_alt_rounded,
+                        icon: LucideIcons.camera,
                         width: 160,
                         height: 44,
                         onPressed: () => _submitProof(context, task.id),
@@ -254,9 +255,9 @@ class _TaskList extends StatelessWidget {
                           color: AppColors.secondary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Icon(Icons.hourglass_bottom_rounded,
+                            Icon(LucideIcons.hourglass,
                                 size: 16, color: AppColors.secondary),
                             SizedBox(width: 8),
                             Text('Chờ duyệt...',
@@ -290,12 +291,12 @@ class _TaskList extends StatelessWidget {
         child: Wrap(
           children: [
             ListTile(
-              leading: const Icon(Icons.camera_alt),
+              leading: Icon(LucideIcons.camera),
               title: const Text('Chụp ảnh'),
               onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library),
+              leading: Icon(LucideIcons.image),
               title: const Text('Chọn từ thư viện'),
               onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
@@ -361,3 +362,6 @@ class _TaskList extends StatelessWidget {
     }
   }
 }
+
+
+
