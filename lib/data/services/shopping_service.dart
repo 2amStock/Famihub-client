@@ -39,8 +39,11 @@ class ShoppingService extends ChangeNotifier {
         final item =
             ShoppingItem.fromJson(arguments[0] as Map<String, dynamic>);
         if (activeList != null) {
-          activeList!.items.add(item);
-          notifyListeners();
+          final exists = activeList!.items.any((i) => i.id == item.id);
+          if (!exists) {
+            activeList!.items.add(item);
+            notifyListeners();
+          }
         }
       }
     });
@@ -144,8 +147,10 @@ class ShoppingService extends ChangeNotifier {
       );
       if (response.statusCode == 200) {
         final newItem = ShoppingItem.fromJson(json.decode(response.body));
-        activeList?.items.add(newItem);
-        notifyListeners();
+        if (activeList != null && !activeList!.items.any((i) => i.id == newItem.id)) {
+          activeList!.items.add(newItem);
+          notifyListeners();
+        }
       }
     } catch (e) {
       print("Error adding item: $e");
